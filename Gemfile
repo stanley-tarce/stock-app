@@ -49,4 +49,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 
 # New Added Gems
-gem 'devise_token_auth' #Token Authentication
+gem 'devise_token_auth' 

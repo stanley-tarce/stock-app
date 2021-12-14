@@ -1,5 +1,6 @@
 class AdminController < ApplicationController
-
+  before_action :authenticate_user!
+  
   def index
     render json: admins, status: 200
   end

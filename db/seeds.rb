@@ -7,4 +7,5 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 
-admin1 = Admin.create(email: 'leandrapanopio@gmail.com', password: 'leannpassword')
+admin1 = Admin.create(email: 'leandrapanopio@gmail.com', password: 'leannpassword', password_confirmation: 'leannpassword')
+admin2 = Admin.create(email: 'stanley@gmail.com', password: '123456', password_confirmation: '123456')

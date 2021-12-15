@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   as :admin do
     # Define routes for Admin within this block.
 
-    post 'admin/create_user' => 'admins#create_user',  as: 'create_user'
+    post 'admin/create_user' => 'admin#create_user',  as: 'create_user'
 
   end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

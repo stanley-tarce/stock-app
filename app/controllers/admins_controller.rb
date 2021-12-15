@@ -1,7 +1,8 @@
 class AdminController < ApplicationController
-
+  before_action :authenticate_admin!, only: [:create_user]
   def index
-    render json: admins, status: 200
+    @admin = Admin.all
+    render json: @admin, status: 200
   end
 
   def create_user 
@@ -16,6 +17,6 @@ class AdminController < ApplicationController
 
   private 
   def user_params
-    params.require(:admin).permit(:email, :password, :password_confirmation)
+    params.require(:user).permit(:email, :password, :password_confirmation)
   end
 end

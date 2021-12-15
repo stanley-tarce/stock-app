@@ -1,0 +1,16 @@
+                       new_admin_session GET    /admin_auth/sign_in(.:format)                                                                     devise_token_auth/sessions#new
+                           admin_session POST   /admin_auth/sign_in(.:format)                                                                     devise_token_auth/sessions#create
+                   destroy_admin_session DELETE /admin_auth/sign_out(.:format)                                                                    devise_token_auth/sessions#destroy
+                      new_admin_password GET    /admin_auth/password/new(.:format)                                                                devise_token_auth/passwords#new
+                     edit_admin_password GET    /admin_auth/password/edit(.:format)                                                               devise_token_auth/passwords#edit
+                          admin_password PATCH  /admin_auth/password(.:format)                                                                    devise_token_auth/passwords#update
+                                         PUT    /admin_auth/password(.:format)                                                                    devise_token_auth/passwords#update
+                                         POST   /admin_auth/password(.:format)                                                                    devise_token_auth/passwords#create
+               cancel_admin_registration GET    /admin_auth/cancel(.:format)                                                                      devise_token_auth/registrations#cancel
+                  new_admin_registration GET    /admin_auth/sign_up(.:format)                                                                     devise_token_auth/registrations#new
+                 edit_admin_registration GET    /admin_auth/edit(.:format)                                                                        devise_token_auth/registrations#edit
+                      admin_registration PATCH  /admin_auth(.:format)                                                                             devise_token_auth/registrations#update
+                                         PUT    /admin_auth(.:format)                                                                             devise_token_auth/registrations#update
+                                         DELETE /admin_auth(.:format)                                                                             devise_token_auth/registrations#destroy
+                                         POST   /admin_auth(.:format)                                                                             devise_token_auth/registrations#create
+               admin_auth_validate_token GET    /admin_auth/validate_token(.:format)                                                              devise_token_auth/token_validations#validate_token

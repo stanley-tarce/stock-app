@@ -27,6 +27,19 @@ class TraderController < ApplicationController
     end
   end 
 
+  # def create_trader
+  #   @trader = Trader.new(trader_params)
+
+  #   if @trader.save
+  #     render json: @trader, status: :ok
+  #     TraderMailer.with(trader: @trader).send_email_receipt.deliver_later
+  #   else
+  #    render json: { errors: @trader.errors.full_messages }, status: 422
+  #   end
+
+  # end
+
+
   private
 
   def trader_params

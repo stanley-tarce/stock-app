@@ -6,3 +6,23 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+  admindetails = [{:name => "Stanley Tarce", :email => "stanleytarce18@gmail.com", :password => "1234567", :password_confirmation => "1234567"}]
+  admindetails.each do |detail|
+    exceptions = [:email, :password, :password_confirmation]
+    admin = Admin.new(detail.except(*exceptions))
+    user = User.create(email: detail[:email], password: detail[:password], password_confirmation: detail[:password_confirmation], user_type: "admin", name: detail[:name])
+    admin.user_id = user.id
+    admin.save!
+  end
+
+  traderdetail = [{:name => "Stanley Tarce", :email => "stanleytarce181@gmail.com", :password => "1234567", :password_confirmation => "1234567"}]
+  traderdetail.each do |detail|
+    exceptions = [:email, :password, :password_confirmation]
+    trader = Trader.new(detail.except(*exceptions))
+    user = User.create(email: detail[:email], password: detail[:password], password_confirmation: detail[:password_confirmation], user_type: "trader", name: detail[:name])
+    trader.user_id = user.id
+    trader.save!
+  end
+ 
+  
+  

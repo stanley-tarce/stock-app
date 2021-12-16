@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 2021_12_15_123231) do
     t.string "nickname"
     t.string "image"
     t.string "email"
+    t.string "user_type"
     t.json "tokens"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

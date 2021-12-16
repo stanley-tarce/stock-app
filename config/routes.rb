@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   mount_devise_token_auth_for 'User', at: 'auth'
-
+  resources :trader, only: [:index]
+  get 'trader/show_trader_stocks', to: 'trader#show_trader_stocks'
+  get 'trader/change_trader_status', to: 'trader#change_trader_status'
   # as :admin do
   #   # Define routes for Admin within this block.
   #   # get '/articles/:id/edit' => 'articles#edit', as: 'edit_article'

@@ -7,9 +7,8 @@ Rails.application.routes.draw do
   namespace :api do 
     namespace :v1 do
       mount_devise_token_auth_for 'User', at: 'auth'
+      post '/admins/create_trader', to: 'admins#create_trader'
       resources :admins do
-        post 'create_admin', to: 'admins#create_admin'
-        post 'create_trader', to: 'admins#create_trader'
       end
       get 'traders/updatestatus/:id', to: 'traders#update_trader_status'
       resources :traders do

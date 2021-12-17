@@ -27,7 +27,6 @@ module Api
       end
 
       def update
-        if authenticate_if_admin!
           user = User.where(id: single_trader[:user_id])
           if single_trader.update(trader_params)
             user.update(name: single_trader.name, email: single_trader.email)
@@ -35,9 +34,6 @@ module Api
           else
             render json: { error: 'Trader update failed' }, status: :unprocessable_entity
           end
-        else
-          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
-        end
       end
 
       def update_trader_status

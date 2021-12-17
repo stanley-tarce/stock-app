@@ -30,6 +30,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'rspec-rails', '~> 5.0.0' # We will use rspec-rails for our tests and specs
   gem 'factory_bot_rails', '~> 6.2.0' # Use factory_bot_rails for our factories
+  gem 'faker'
 end
 
 group :development do
@@ -39,7 +40,7 @@ group :development do
 end
 
 group :test do
- gem 'faker'
+
  gem 'database_cleaner'
 end
 

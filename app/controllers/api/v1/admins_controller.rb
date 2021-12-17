@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 require "#{Rails.root}/app/controllers/modules/admins_module"
 require "#{Rails.root}/app/controllers/modules/traders_module"
 module Api
@@ -14,6 +13,7 @@ module Api
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
       end
+    end
       def show 
         if authenticate_if_admin
           render json: single_trader
@@ -34,8 +34,9 @@ module Api
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
       end
-      def create_admin
+      def create
         if authenticate_if_admin!
+          puts request.headers['access-token']
           exceptions = %i[password password_confirmation]
           admin = Admin.new(admin_params.except(*exceptions))
           user = User.create(email: admin.email, password: params[:admin][:password], password_confirmation: params[:admin][:password_confirmation],

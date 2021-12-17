@@ -8,7 +8,32 @@ module Api
       before_action :authenticate_api_v1_user!
       include AdminsModule
       include TradersModule
-      # tested
+      def index
+        if authenticate_if_admin
+          render json: all_trader
+        else
+          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+      end
+      def show 
+        if authenticate_if_admin
+          render json: single_trader
+        else
+          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+        end
+      end
+      def update
+        if authenticate_if_admin
+          user = User.find_by(id: single_admin[:user_id])
+          if single_admin.update(admin_params)
+            user.update(name: single_admin.name, email: single_admin.email)
+            render json: { message: 'Trader updated successfully' }, status: 200
+          else
+            render json: { error: 'Trader update failed' }, status: :unprocessable_entity
+          end
+        else
+          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+        end
+      end
       def create_admin
         if authenticate_if_admin!
           exceptions = %i[password password_confirmation]
@@ -41,6 +66,13 @@ module Api
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
+      end
+      private 
+      def all_admin
+        Admin.all
+      end
+      def single_admin
+        Admin.find(params[:id])
       end
     end
   end

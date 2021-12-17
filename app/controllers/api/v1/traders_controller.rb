@@ -30,6 +30,7 @@ module Api
         if authenticate_if_admin!
           user = User.where(id: single_trader[:user_id])
           if single_trader.update(trader_params)
+            user.update(name: single_trader.name, email: single_trader.email)
             render json: { message: 'Trader updated successfully' }, status: 200
           else
             render json: { error: 'Trader update failed' }, status: :unprocessable_entity
@@ -72,11 +73,11 @@ module Api
       private
 
       def all_trader
-        @traders = Trader.all
+        Trader.all
       end
 
       def single_trader
-        @trader = Trader.find(params[:id])
+        Trader.find(params[:id])
       end
     end
   end

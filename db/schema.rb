@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_16_125137) do
+ActiveRecord::Schema.define(version: 2021_12_18_113703) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,14 @@ ActiveRecord::Schema.define(version: 2021_12_16_125137) do
     t.string "password"
     t.string "password_confirmation"
     t.index ["user_id"], name: "index_admins_on_user_id"
+  end
+
+  create_table "stocks", force: :cascade do |t|
+    t.string "stock_name"
+    t.integer "unit"
+    t.integer "price_per_unit"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "traders", force: :cascade do |t|

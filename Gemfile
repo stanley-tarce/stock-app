@@ -51,5 +51,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 
 # New Added Gems
+gem 'figaro'
 gem 'devise_token_auth' # Authentication for Rails API 
 gem 'active_model_serializers', '~> 0.10.0' # API Serializer 
+gem 'iex-ruby-client' #API 

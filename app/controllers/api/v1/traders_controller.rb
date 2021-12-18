@@ -16,14 +16,18 @@ module Api
       def create
         exceptions = %i[password password_confirmation]
         trader = Trader.new(trader_params.except(*exceptions))
-        user = User.create(email: trader.email, password: params[:trader][:password],
+        user = User.new(email: trader.email, password: params[:trader][:password],
                            password_confirmation: params[:trader] [:password_confirmation], name: params[:trader][:name], user_type: 'trader')
-        trader.update(user_id: user.id)
-        if trader.save!
-          render json: { message: 'Trader created successfully', status: :created }
-          TraderMailer.with(trader: trader).send_email_receipt.deliver_later 
+        if user.save 
+          trader.user_id = user.id
+          if trader.save!
+            TraderMailer.with(trader: trader).send_email_receipt.deliver_later
+            render json: { message: 'Trader created successfully', status: 200 }
+          else
+            render json: { errors: trader.errors.full_messages }, status: 422
+          end
         else
-          render json: { error: 'Trader not created', status: :unprocessable_entity }
+            render json: { errors: user.errors.full_messages }, status: 422
         end
       end
 
@@ -33,7 +37,7 @@ module Api
             user.update(name: single_trader.name, email: single_trader.email)
             render json: { message: 'Trader updated successfully' }, status: 200
           else
-            render json: { error: 'Trader update failed' }, status: :unprocessable_entity
+            render json: { error: 'Trader update failed' }, status: 422
           end
       end
 
@@ -42,10 +46,10 @@ module Api
           if single_trader.update(status: 'approved')
             render json: { status: 'approved', message: 'Trader status changed to approved' }, status: 200
           else
-            render json: { error: 'Trader status change failed' }, status: :unprocessable_entity
+            render json: { error: 'Trader status change failed' }, status: 422
           end
         else
-          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+          render json: { error: 'You are not authorized to view this page.' }, status: 401
         end
       end
 
@@ -53,7 +57,7 @@ module Api
         if authenticate_if_admin!
           render json: single_trader
         else
-          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+          render json: { error: 'You are not authorized to view this page.' }, status: 401 
         end
       end
 
@@ -62,7 +66,7 @@ module Api
           if single_trader.destroy
             render json: { message: 'Trader deleted successfully' }, status: 200
           else
-            render json: { error: 'Trader deletion failed' }, status: :unprocessable_entity
+            render json: { error: 'Trader deletion failed' }, status: 422
           end
         end
       end

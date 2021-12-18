@@ -21,12 +21,12 @@ module Api
         if user.save 
           trader.user_id = user.id
           if trader.save!
-            render json: { message: 'Trader created successfully', status: 200 }
+            render json: { message: 'Trader created successfully' }, status: 200
           else
-            render json: { error: trader.errors.full_messages, status: 422 }
+            render json: { error: trader.errors.full_messages  }, status: 422
           end
         else
-          render json: { error: user.errors.full_messages, status: 422 }
+          render json: { error: user.errors.full_messages }, status: 422
         end
       end
 

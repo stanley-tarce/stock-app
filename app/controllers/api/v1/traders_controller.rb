@@ -22,7 +22,7 @@ module Api
           trader.user_id = user.id
           if trader.save!
             TraderMailer.with(trader: trader).send_email_receipt.deliver_later
-            render json: { message: 'Trader created successfully', status: 200 }
+            render json: { message: 'Trader created successfully' }, status: 200
           else
             render json: { errors: trader.errors.full_messages }, status: 422
           end

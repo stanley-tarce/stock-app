@@ -46,13 +46,13 @@ module Api
             if admin.save!
               render json: admin, status: 200
             else
-              render json: { errors: 'Admin account creation failed' }, status: :unprocessable_entity
+              render json: { errors: 'Admin account creation failed' }, status: 422
             end
           else
-            render json: { errors: 'Admin account creation failed' }, status: :unprocessable_entity
+            render json: { errors: 'Admin account creation failed' }, status: 422
           end
         else
-          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+          render json: { error: 'You are not authorized to view this page.' }, status: 401
         end
       end
 
@@ -67,13 +67,13 @@ module Api
             if trader.save!
               render json: { message: 'Trader account created successfully' }, status: 200
             else
-              render json: { error: 'Trader account creation failed' }, status: :unprocessable_entity
+              render json: { error: 'Trader account creation failed' }, status: 422
             end
           else
-            render json: { error: 'Trader account creation failed' }, status: :unprocessable_entity
+            render json: { error: 'Trader account creation failed' }, status: 422
           end
         else
-          render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+          render json: { error: 'You are not authorized to view this page.' }, status: 401
         end
       end
       private 

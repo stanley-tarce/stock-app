@@ -41,12 +41,16 @@ module Api
           admin = Admin.new(admin_params.except(*exceptions))
           user = User.create(email: admin.email, password: params[:admin][:password], password_confirmation: params[:admin][:password_confirmation],
                              user_type: 'admin')
+          if user.save
             admin.user_id = user.id
             if admin.save!
               render json: admin, status: 200
             else
               render json: { errors: 'Admin account creation failed' }, status: :unprocessable_entity
             end
+          else
+            render json: { errors: 'Admin account creation failed' }, status: :unprocessable_entity
+          end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
@@ -56,14 +60,18 @@ module Api
         if authenticate_if_admin!
           exceptions = %i[password password_confirmation]
           trader = Trader.new(trader_params.except(*exceptions))
-          user = User.create(email: trader.email, password: params[:trader][:password], password_confirmation: params[:trader][:password_confirmation],
+          user = User.new(email: trader.email, password: params[:trader][:password], password_confirmation: params[:trader][:password_confirmation],
                              user_type: 'trader')
+          if user.save
             trader.user_id = user.id
             if trader.save!
               render json: { message: 'Trader account created successfully' }, status: 200
             else
               render json: { error: 'Trader account creation failed' }, status: :unprocessable_entity
             end
+          else
+            render json: { error: 'Trader account creation failed' }, status: :unprocessable_entity
+          end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end

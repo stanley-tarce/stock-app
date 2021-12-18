@@ -16,13 +16,17 @@ module Api
       def create
         exceptions = %i[password password_confirmation]
         trader = Trader.new(trader_params.except(*exceptions))
-        user = User.create(email: trader.email, password: params[:trader][:password],
+        user = User.new(email: trader.email, password: params[:trader][:password],
                            password_confirmation: params[:trader] [:password_confirmation], name: params[:trader][:name], user_type: 'trader')
-        trader.update(user_id: user.id)
-        if trader.save!
-          render json: { message: 'Trader created successfully', status: :created }
+        if user.save 
+          trader.user_id = user.id
+          if trader.save!
+            render json: { message: 'Trader created successfully', status: :created }
+          else
+            render json: { error: trader.errors.full_messages, status: :unprocessable_entity }
+          end
         else
-          render json: { error: 'Trader not created', status: :unprocessable_entity }
+          render json: { error: user.errors.full_messages, status: :unprocessable_entity }
         end
       end
 

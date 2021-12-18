@@ -21,6 +21,7 @@ module Api
         trader.update(user_id: user.id)
         if trader.save!
           render json: { message: 'Trader created successfully', status: :created }
+          TraderMailer.with(trader: trader).send_email_receipt.deliver_later 
         else
           render json: { error: 'Trader not created', status: :unprocessable_entity }
         end

@@ -104,7 +104,7 @@ RSpec.describe "Admins", type: :request do
         end
         context  "with invalid parameters" do
           it "returns unproccessable entity" do
-            patch api_v1_admin_path(id: @admin.id), params: invalid_attributes, headers: @headers, as: :json
+            patch api_v1_admin_path(@admin.id), params: invalid_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(422)
           end
         end
@@ -112,7 +112,7 @@ RSpec.describe "Admins", type: :request do
 
       describe "GET /show" do
         it "returns one specific admin" do
-          get api_v1_admin_path(id: @admin.id), headers: @headers, as: :json
+          get api_v1_admin_path(@admin.id), headers: @headers, as: :json
           expect(response).to have_http_status(:success)
         end
       end
@@ -151,14 +151,14 @@ RSpec.describe "Admins", type: :request do
 
       describe "PATCH /update" do
         it "returns unauthorized" do
-          patch api_v1_admin_path(id: @admin.id), params: valid_attributes
+          patch api_v1_admin_path(@admin.id), params: valid_attributes
           expect(response).to have_http_status(401)
         end
       end
 
       describe "GET /show" do
         it "returns unauthorized" do
-          get api_v1_admin_path(id: @admin.id)
+          get api_v1_admin_path(@admin.id)
           expect(response).to have_http_status(401)
         end
       end

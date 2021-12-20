@@ -1,0 +1,5 @@
+                    api_v1_trader_stocks GET    /api/v1/traders/:trader_id/stocks(.:format)                                                       api/v1/stocks#show
+                                         PATCH  /api/v1/traders/:trader_id/stocks(.:format)                                                       api/v1/stocks#update
+                                         PUT    /api/v1/traders/:trader_id/stocks(.:format)                                                       api/v1/stocks#update
+                                         DELETE /api/v1/traders/:trader_id/stocks(.:format)                                                       api/v1/stocks#destroy
+                                         POST   /api/v1/traders/:trader_id/stocks(.:format)                                                       api/v1/stocks#create

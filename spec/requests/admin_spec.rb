@@ -60,7 +60,7 @@ RSpec.describe "Admins", type: :request do
       }
     }
   }
-  
+
   describe "API Testing" do
     before(:each) do
       post @sign_up_url, params: @sign_up_params 
@@ -88,7 +88,7 @@ RSpec.describe "Admins", type: :request do
           end
         end
         context "with invalid parameters" do
-          it "creates a new admin" do
+          it "returns unproccessable entity" do
             post api_v1_admins_path, params: invalid_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(422)
           end
@@ -103,7 +103,7 @@ RSpec.describe "Admins", type: :request do
           end
         end
         context  "with invalid parameters" do
-          it "updates an admin" do
+          it "returns unproccessable entity" do
             patch api_v1_admin_path(id: @admin.id), params: invalid_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(422)
           end
@@ -126,7 +126,7 @@ RSpec.describe "Admins", type: :request do
         end
 
         context "with invalid parameters" do
-          it "creates a trader account" do
+          it "returns unproccessable entity" do
             post api_v1_admins_create_trader_path, params: invalid_trader_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(422)
           end

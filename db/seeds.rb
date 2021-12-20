@@ -6,7 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-  admindetails = [{:name => "Stanley Tarce", :email => "stanleytarce18@gmail.com", :password => "1234567", :password_confirmation => "1234567"}]
+  admindetails = [{:name => "Stanley Tarce", :email => "stanleytarce18@gmail.com", :password => "1234567", :password_confirmation => "1234567"} ]
   admindetails.each do |detail|
     exceptions = [ :password, :password_confirmation]
     admin = Admin.new(detail.except(*exceptions))

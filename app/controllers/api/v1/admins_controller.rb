@@ -8,27 +8,27 @@ module Api
       include AdminsModule
       include TradersModule
       def index
-        if authenticate_if_admin
-          render json: all_trader
+        if authenticate_if_admin!
+          render json: all_admin
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
+        end
       end
-    end
       def show 
-        if authenticate_if_admin
-          render json: single_trader
+        if authenticate_if_admin!
+          render json: single_admin
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
       end
       def update
-        if authenticate_if_admin
+        if authenticate_if_admin!
           user = User.find_by(id: single_admin[:user_id])
           if single_admin.update(admin_params)
             user.update(name: single_admin.name, email: single_admin.email)
-            render json: { message: 'Trader updated successfully' }, status: 200
+            render json: { message: 'Admin updated successfully' }, status: 200 
           else
-            render json: { error: 'Trader update failed' }, status: :unprocessable_entity
+            render json: { error: 'Admin update failed' }, status: :unprocessable_entity
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
@@ -36,7 +36,7 @@ module Api
       end
       def create
         if authenticate_if_admin!
-          puts request.headers['access-token']
+          # puts request.headers['access-token']
           exceptions = %i[password password_confirmation]
           admin = Admin.new(admin_params.except(*exceptions))
           user = User.create(email: admin.email, password: params[:admin][:password], password_confirmation: params[:admin][:password_confirmation],
@@ -76,10 +76,12 @@ module Api
           render json: { error: 'You are not authorized to view this page.' }, status: 401
         end
       end
+
       private 
       def all_admin
         Admin.all
       end
+
       def single_admin
         Admin.find(params[:id])
       end

@@ -44,6 +44,7 @@ module Api
       def update_trader_status
         if authenticate_if_admin!
           if single_trader.update(status: 'approved')
+            TraderMailer.with(trader: trader).approved_account_receipt.deliver_later
             render json: { status: 'approved', message: 'Trader status changed to approved' }, status: 200
           else
             render json: { error: 'Trader status change failed' }, status: 422
@@ -55,7 +56,7 @@ module Api
 
       def show 
         if authenticate_if_admin!
-          render json: single_trader
+          render json: single_trader, status: 200
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401 
         end

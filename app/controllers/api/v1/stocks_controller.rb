@@ -1,5 +1,5 @@
-require "#{Rails.root}/app/controllers/models/stock_module"
-require "#{Rails.root}/app/controllers/models/transction_histories_module"
+require "#{Rails.root}/app/controllers/modules/stocks_module"
+require "#{Rails.root}/app/controllers/modules/transaction_histories_module"
 
 class Api::V1::StocksController < ApplicationController
   before_action :authenticate_api_v1_user!
@@ -66,20 +66,21 @@ class Api::V1::StocksController < ApplicationController
         return render json: { message: "Stocks Deleted"}, status: 200
       end
       if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
+        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: trader.stocks.total_price, trader: trader, stock_name: market.stock_name)
+        if transaction.save 
+          render json: trader.stocks, status: 200
+        else
+          render json: { errors: 'Stock update failed' }, status: 422
+        end
       else
+        render json: { errors: 'Stock update failed' }, status: 422
       end
     else
        #Continue here
+       render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized     
     end
   end
 
-
-
-  def destroy
-  end
-
-  def show
-  end
   private
   def stock_all
     stocks = []

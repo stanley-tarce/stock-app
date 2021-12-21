@@ -8,4 +8,12 @@ class TraderMailer < ApplicationMailer
         )
         puts "email sent"
     end
+
+    def approved_account_receipt
+        @trader = params[:trader]
+        mail(to: email_address_with_name(@trader.email, @trader.name),
+        subject: "Your account is approved"
+    )
+    puts "email sent"
+    end
 end

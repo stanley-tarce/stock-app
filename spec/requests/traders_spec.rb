@@ -5,6 +5,8 @@ RSpec.describe "Traders", type: :request do
   before(:each) do
     @user = FactoryBot.create(:user, :user_type => "trader")
     @trader = FactoryBot.create(:trader, :user => @user)
+    @admin = FactoryBot.create(:admin, :user => @user)
+
 
     @sign_up_url = api_v1_user_session_path
     @sign_in_url = api_v1_user_session_path
@@ -82,13 +84,14 @@ RSpec.describe "Traders", type: :request do
         include_context "when user is signed in"
         context "with valid parameters" do
           it "updates a trader" do
-            patch api_v1_trader_path(id: @trader.id), params: valid_attributes, headers: @headers, as: :json
+            patch api_v1_trader_path(@trader.id), params: valid_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(:success)
+            # expect(JSON.parse(response.body)[:status]).to eq("approved")
           end
         end
         context "with invalid parameters" do
           it "returns unproccessable entity" do
-            patch api_v1_trader_path(id: @trader.id), params: invalid_attributes, headers: @headers, as: :json
+            patch api_v1_trader_path(@trader.id), params: invalid_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(422)
           end
         end
@@ -98,8 +101,39 @@ RSpec.describe "Traders", type: :request do
     context "when user is not logged in" do
       describe "PATCH /update" do
         it "returns unauthorized" do
-          patch api_v1_trader_path(id: @trader.id), params: valid_attributes, headers: @headers, as: :json
+          patch api_v1_trader_path(@trader.id), params: valid_attributes, headers: @headers, as: :json
           expect(response).to have_http_status(401)
+        end
+      end
+    end
+
+    context "when user is logged in" do
+      describe "PATCH /update trader status" do
+        include_context "when user is signed in"
+        context "with valid parameters" do
+          it "updates trader status" do 
+            patch api_v1_trader_path(@trader.id), params: valid_attributes, headers: @headers, as: :json
+            expect(response).to have_http_status(200)
+            # expect(JSON.parse(response.body)["status"]).to eq("approved")
+          end
+        end
+        context "with invalid parameters" do
+          it "updates trader status" do 
+            patch api_v1_trader_path(@trader.id), params: invalid_attributes, headers: @headers, as: :json
+            expect(response).to have_http_status(422)
+          end
+        end
+      end
+    end
+
+    context "when user is logged in" do
+      describe "GET /show" do
+        include_context "when user is signed in"
+        context "with valid parameters" do
+          it "shows trader" do 
+            get api_v1_traders_path(@trader.id), params: valid_attributes, headers: @headers, as: :json
+            expect(response).to have_http_status(200)
+          end
         end
       end
     end

@@ -2,13 +2,14 @@ require "#{Rails.root}/app/controllers/models/stock_module"
 require "#{Rails.root}/app/controllers/models/transction_histories_module"
 
 class Api::V1::StocksController < ApplicationController
+  before_action :authenticate_api_v1_user!
   include StocksModule
   def index
     render json: stock_all
   end
 
   def create
-    if !(authenticate_if_admin!)
+    if !(authenticate_if_admin!) && authenticate_trader_status!
       trader = current_api_v1_user.trader
       market = Market.find(params[:stock][:market_id])
       trader.stocks.new(stock_params)
@@ -30,6 +31,13 @@ class Api::V1::StocksController < ApplicationController
   end
 
   def update
+    if !(authenticate_if_admin!) && authenticate_trader_status!
+      trader = current_api_v1_user.trader
+      if single_stock.update(stock_params)
+
+    else
+      render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized     
+    end
   end
 
   def destroy
@@ -49,5 +57,8 @@ class Api::V1::StocksController < ApplicationController
   end
   def stock_all_v2
     Stock.where(trader_id: current_api_v1_user.trader.id)
+  end
+  def single_stock
+    Stock.find(params[:id])
   end
 end

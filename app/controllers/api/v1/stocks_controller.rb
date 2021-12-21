@@ -30,15 +30,50 @@ class Api::V1::StocksController < ApplicationController
     end
   end
 
-  def update
+  def buy
     if !(authenticate_if_admin!) && authenticate_trader_status!
       trader = current_api_v1_user.trader
-      if single_stock.update(stock_params)
-
+      old_stock_shares = single_stock.shares
+      buy_value = single_stock.price_per_unit * params[:stock][:shares].to_i
+      if (trader.wallet < buy_value)
+        return render json: { error: 'Insufficient Funds' }, status: 422
+      end
+      new_stock_shares = old_stock_shares + params[:stock][:shares].to_i
+      if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
+        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: trader.stocks.total_price, trader: trader, stock_name: market.stock_name)
+        if transaction.save 
+          render json: trader.stocks, status: 200
+        else
+          render json: { errors: 'Stock update failed' }, status: 422
+        end
+      else
+        render json: { errors: 'Stock update failed' }, status: 422
+      end
     else
       render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized     
     end
   end
+  def sell
+    if !(authenticate_if_admin!) && authenticate_trader_status!
+      trader = current_api_v1_user.trader
+      old_stock_shares = single_stock.shares
+      new_stock_shares = old_stock_shares - params[:stock][:shares].to_i
+      new_wallet = single_stock.price_per_unit * params[:stock][:shares].to_i
+      trader.wallet = trader.wallet + new_wallet
+      if new_stock_shares < 0
+        single_stock.delete
+        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: trader.stocks.total_price, trader: trader, stock_name: market.stock_name)
+        return render json: { message: "Stocks Deleted"}, status: 200
+      end
+      if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
+      else
+      end
+    else
+       #Continue here
+    end
+  end
+
+
 
   def destroy
   end
@@ -59,6 +94,6 @@ class Api::V1::StocksController < ApplicationController
     Stock.where(trader_id: current_api_v1_user.trader.id)
   end
   def single_stock
-    Stock.find(params[:id])
+    Trader.stocks.find(params[:id])
   end
 end

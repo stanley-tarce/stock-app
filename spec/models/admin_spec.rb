@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Admin, type: :model do
-   context "Data Creation" do
+  context "Data Creation" do
     before(:each) do
       @admin = FactoryBot.create(:admin) 
     end

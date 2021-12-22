@@ -8,10 +8,10 @@ Rails.application.routes.draw do
     namespace :v1 do
       mount_devise_token_auth_for 'User', at: 'auth'
       post '/admins/create_trader', to: 'admins#create_trader' # @leandrajade @miyutogo I think this is a bit redundant because we already have a route/method for this. traders#create
-      resource :admins
+      resources :admins
       get 'traders/updatestatus/:id', to: 'traders#update_trader_status'
       resources :traders do
-        resource :stocks
+        resources :stocks
       end
       resource :markets
     end

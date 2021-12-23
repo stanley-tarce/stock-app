@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(version: 2021_12_22_060927) do
 
   create_table "stocks", force: :cascade do |t|
     t.string "stock_name"
-    t.integer "unit"
     t.integer "price_per_unit"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

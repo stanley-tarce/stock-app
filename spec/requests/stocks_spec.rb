@@ -93,17 +93,14 @@ RSpec.describe "Stocks", type: :request do
         end
       end
 
-      describe "GET /buy" do
+      describe "POST /buy" do
         context "with valid parameters" do
           it "buys more shares of existing stock" do
-            # stock = Stock.create(valid_stock_attributes)
             s = @trader.stocks.create(valid_stock_attributes)
-            # patch api_v1_trader_stocks_path(@trader_id, s), headers: @headers, as: :json
-            get "/api/v1/traders/#{@trader.id}/buy/stocks/#{s.id}", headers: @headers, as: :json
+            post "/api/v1/traders/#{@trader.id}/buy/stocks/#{s.id}", params: valid_stocks_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(:success)
           end
         end
-       
       end
     end
   end

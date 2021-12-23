@@ -103,7 +103,7 @@ class Api::V1::StocksController < ApplicationController
     Stock.where(trader_id: current_api_v1_user.trader.id)
   end
   def single_stock
-    Trader.stocks.find(params[:id])
+    Trader.find_by(id: params[:trader_id]).stocks.find(params[:id])
     # Trader.find(params[:stock][:id])
   end
 end

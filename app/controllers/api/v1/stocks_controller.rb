@@ -12,13 +12,6 @@ class Api::V1::StocksController < ApplicationController
     if !(authenticate_if_admin!) && authenticate_trader_status!
       trader = current_api_v1_user.trader
       market = Market.find(params[:stock][:market_id])
-      # trader.stocks.new(stock_params)
-      # trader.stocks.stock_name = market.stock_name #ARRAY 
-      # trader.stocks.price_per_unit = market.price_per_unit
-      # trader.stocks.total_price = market.price_per_unit * params[:stock][:shares].to_i
-      # if (trader.wallet < trader.stocks.total_price)
-      #   return render json: { error: 'Insufficient Funds' }, status: 422 
-      # end
       stock = trader.stocks.new(stock_params)
       stock.stock_name = market.stock_name
       stock.price_per_unit = market.price_per_unit
@@ -42,13 +35,14 @@ class Api::V1::StocksController < ApplicationController
     if !(authenticate_if_admin!) && authenticate_trader_status!
       trader = current_api_v1_user.trader
       old_stock_shares = single_stock.shares
+      market = Market.find(params[:stock][:market_id])
       buy_value = single_stock.price_per_unit * params[:stock][:shares].to_i
       if (trader.wallet < buy_value)
         return render json: { error: 'Insufficient Funds' }, status: 422
       end
       new_stock_shares = old_stock_shares + params[:stock][:shares].to_i
       if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
-        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: trader.stocks.total_price, trader: trader, stock_name: market.stock_name)
+        transaction = trader.transaction_histories.new(shares: params[:stock][:shares], price_per_unit: market.price_per_unit, total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
         if transaction.save 
           render json: trader.stocks, status: 200
         else
@@ -70,11 +64,11 @@ class Api::V1::StocksController < ApplicationController
       trader.wallet = trader.wallet + new_wallet
       if new_stock_shares < 0
         single_stock.delete
-        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: trader.stocks.total_price, trader: trader, stock_name: market.stock_name)
+        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
         return render json: { message: "Stocks Deleted"}, status: 200
       end
       if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
-        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: trader.stocks.total_price, trader: trader, stock_name: market.stock_name)
+        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
         if transaction.save 
           render json: trader.stocks, status: 200
         else
@@ -104,6 +98,5 @@ class Api::V1::StocksController < ApplicationController
   end
   def single_stock
     Trader.find_by(id: params[:trader_id]).stocks.find(params[:id])
-    # Trader.find(params[:stock][:id])
   end
 end

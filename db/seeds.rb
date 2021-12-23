@@ -2,9 +2,6 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
 # Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
 
   admindetails = [{:name => "Stanley Tarce", :email => "stanleytarce18@gmail.com", :password => "1234567", :password_confirmation => "1234567"} ]
   admindetails.each do |detail|
@@ -25,9 +22,15 @@
   end
  
 
-#   client = IEX::Api::Client.new(
-#   publishable_token: ENV['iex_publishable_token'],
-#   secret_token: Figaro.env.iex_secret_token,
-#   endpoint: 'https://cloud.iexapis.com/v1'
-# )
+  client = IEX::Api::Client.new(
+    publishable_token: 'pk_9a4005e57b274b3d9e2bd747f1b34bb5',
+    secret_token: 'sk_c0449ed5b4dc4051b2793339526c980c',
+    endpoint: 'https://cloud.iexapis.com/v1'
+  )
+
+  stocks = [ 'AAPL', 'TSLA', 'NKE' ]
+  stocks.each do |stock|
+    quote = client.quote(stock)
+    Market.create(stock_name: stock, price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s)
+  end
   

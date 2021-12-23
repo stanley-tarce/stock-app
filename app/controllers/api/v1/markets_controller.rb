@@ -1,4 +1,4 @@
-require "#{Rails.root}/app/controllers/modules/market_module"
+require "#{Rails.root}/app/controllers/modules/markets_module"
 
 class Api::V1::MarketsController < ApplicationController
   before_action [:authenticate_api_v1_user!, :authenticate_api_v1_admin!]
@@ -40,7 +40,7 @@ class Api::V1::MarketsController < ApplicationController
       render json: { error: 'You are not authorized to view this page.' }, status: 401
     end
   end
-  def delete
+  def destroy
     if authenticate_if_admin!
       if market_single.destroy
         render json: { message: 'Market deleted successfully' }, status: 200

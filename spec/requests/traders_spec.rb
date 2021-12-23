@@ -34,7 +34,6 @@ RSpec.describe "Trader API Testing", type: :request do
     @user.save
     @trader.user = @user
     @trader.save
-    # @admin = FactoryBot.create(:admin, :user => @user)
     @sign_up_url = '/api/v1/auth'
     @sign_in_url = '/api/v1/auth/sign_in'
 

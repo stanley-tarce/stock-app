@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Trader, type: :model do
-  context "Data Creation" do
+  
     before(:each) do
       @trader = FactoryBot.create(:trader) 
     end
@@ -16,5 +16,8 @@ RSpec.describe Trader, type: :model do
       @trader = FactoryBot.build(:trader, name: nil)
       expect(@trader).to be_invalid
     end
-  end 
+    it "4. should have a user_type of trader" do
+      expect(@trader.user.user_type).to eq("trader")
+    end
+
 end

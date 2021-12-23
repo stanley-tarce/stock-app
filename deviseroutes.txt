@@ -1,0 +1,16 @@
+                 new_api_v1_user_session GET    /api/v1/auth/sign_in(.:format)                                                                    devise_token_auth/sessions#new
+                     api_v1_user_session POST   /api/v1/auth/sign_in(.:format)                                                                    devise_token_auth/sessions#create
+             destroy_api_v1_user_session DELETE /api/v1/auth/sign_out(.:format)                                                                   devise_token_auth/sessions#destroy
+                new_api_v1_user_password GET    /api/v1/auth/password/new(.:format)                                                               devise_token_auth/passwords#new
+               edit_api_v1_user_password GET    /api/v1/auth/password/edit(.:format)                                                              devise_token_auth/passwords#edit
+                    api_v1_user_password PATCH  /api/v1/auth/password(.:format)                                                                   devise_token_auth/passwords#update
+                                         PUT    /api/v1/auth/password(.:format)                                                                   devise_token_auth/passwords#update
+                                         POST   /api/v1/auth/password(.:format)                                                                   devise_token_auth/passwords#create
+         cancel_api_v1_user_registration GET    /api/v1/auth/cancel(.:format)                                                                     devise_token_auth/registrations#cancel
+            new_api_v1_user_registration GET    /api/v1/auth/sign_up(.:format)                                                                    devise_token_auth/registrations#new
+           edit_api_v1_user_registration GET    /api/v1/auth/edit(.:format)                                                                       devise_token_auth/registrations#edit
+                api_v1_user_registration PATCH  /api/v1/auth(.:format)                                                                            devise_token_auth/registrations#update
+                                         PUT    /api/v1/auth(.:format)                                                                            devise_token_auth/registrations#update
+                                         DELETE /api/v1/auth(.:format)                                                                            devise_token_auth/registrations#destroy
+                                         POST   /api/v1/auth(.:format)                                                                            devise_token_auth/registrations#create
+              api_v1_auth_validate_token GET    /api/v1/auth/validate_token(.:format)                                                             devise_token_auth/token_validations#validate_token

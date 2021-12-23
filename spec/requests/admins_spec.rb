@@ -1,43 +1,22 @@
 require 'rails_helper'
 
-RSpec.describe "Admins", type: :request do
-
-  
-  before(:each) do
-    @user = FactoryBot.create(:user, :user_type => "admin")
-    @admin = FactoryBot.create(:admin, :user => @user)
-
-    @sign_up_url = api_v1_user_session_path
-    @sign_in_url = api_v1_user_session_path
-
-    @sign_up_params = {
-      email: @user.email,
-      password: @user.password,
-      password_confirmation: @user.password
-    }
-
-    @login_params = {
-      email: @user.email,
-      password: @user.password
-    }
-  end
-
-  let(:valid_attributes) {
-    {
-    :email => "ellerreyes82@gmail.com", 
-    :password => "24242424", 
-    :password_confirmation => "24242424"
-    }
+RSpec.describe "Admin API Testing", type: :request do
+  let(:admin_attributes) {
+   { :admin => {
+      :name => "Leandra",
+      :email => "ellerreyes82@gmail.com", 
+      :password => "24242424", 
+      :password_confirmation => "24242424"
+    }}
   }
-
-  let(:invalid_attributes) {
-    {
-    :email => nil, 
-    :password => nil, 
-    :password_confirmation => nil
-    }
+    let(:invalid_admin_attributes) {
+   { :admin => {
+      :name => nil,
+      :email => nil, 
+      :password => "24242424", 
+      :password_confirmation => "24242424"
+    }}
   }
-
   let(:valid_trader_attributes) {
     {
       :trader => {
@@ -60,115 +39,82 @@ RSpec.describe "Admins", type: :request do
       }
     }
   }
+  before(:each) do
+    @user = FactoryBot.create(:user, :user_type => "admin")
+    @admin = FactoryBot.create(:admin, :user => @user, :name => @user.name, :email => @user.email)
+    @sign_up_url = '/api/v1/auth'
+    @sign_in_url = '/api/v1/auth/sign_in'
 
-  describe "API Testing" do
-    before(:each) do
-      post @sign_up_url, params: @sign_up_params 
-      @headers = {
-        "access-token": response.headers["access-token"],
-        "uid": response.headers["uid"],
-        "client": response.headers["client"],
-        "expiry": response.headers["expiry"]
+      @sign_up_params = {
+        email: @user.email,
+        password: @user.password,
+        password_confirmation: @user.password
       }
-    end
 
-    context "when admin is signed in" do
-      describe "GET /index" do
-        it "returns the list of admins" do
-          get api_v1_admins_path, headers: @headers, as: :json
-          expect(response).to have_http_status(:success)
-        end
-      end
-
-      describe "POST /create" do
-        context "with valid parameters" do
-          it "creates a new admin" do
-            post api_v1_admins_path, params: valid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-        context "with invalid parameters" do
-          it "returns unproccessable entity" do
-            post api_v1_admins_path, params: invalid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(422)
-          end
-        end
-      end
-
-      describe "PATCH /update" do
-        context "with valid parWameters" do
-          it "updates an admin" do
-            patch api_v1_admin_path(id: @admin.id), params: valid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-        context  "with invalid parameters" do
-          it "returns unproccessable entity" do
-            patch api_v1_admin_path(@admin.id), params: invalid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(422)
-          end
-        end
-      end
-
-      describe "GET /show" do
-        it "returns one specific admin" do
-          get api_v1_admin_path(@admin.id), headers: @headers, as: :json
-          expect(response).to have_http_status(:success)
-        end
-      end
-
-      describe "POST /create_trader" do
-        context "with valid parameters" do
-          it "creates a trader account" do
-            post api_v1_admins_create_trader_path, params: valid_trader_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-
-        context "with invalid parameters" do
-          it "returns unproccessable entity" do
-            post api_v1_admins_create_trader_path, params: invalid_trader_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(422)
-          end
-        end
-      end
-    end
-
-    context "when admin is not signed in" do
-      describe "GET /index" do
-        it "returns unauthorized" do
-          get api_v1_admins_path
-          expect(response).to have_http_status(401)
-        end
-      end
-
-      describe "POST /create" do
-        it "POST /create returns unauthorized" do
-          post api_v1_admins_path, params: valid_attributes
-          expect(response).to have_http_status(401)
-        end
-      end
-
-      describe "PATCH /update" do
-        it "returns unauthorized" do
-          patch api_v1_admin_path(@admin.id), params: valid_attributes
-          expect(response).to have_http_status(401)
-        end
-      end
-
-      describe "GET /show" do
-        it "returns unauthorized" do
-          get api_v1_admin_path(@admin.id)
-          expect(response).to have_http_status(401)
-        end
-      end
-
-      describe "POST /create_trader" do
-        it "returns unauthorized" do
-          post api_v1_admins_create_trader_path, params: valid_trader_attributes
-          expect(response).to have_http_status(401)
-        end
-      end
-    end
+      @login_params = {
+        email: @user.email,
+        password: @user.password
+      }
+    post @sign_in_url, params: @login_params
+    @headers = {
+      "access-token": response.headers["access-token"],
+      "uid": response.headers["uid"],
+      "client": response.headers["client"],
+      "expiry": response.headers["expiry"]
+    }
   end
-end
+  it "1. It should be able to create an admin account using the API (admins#create)" do
+    post '/api/v1/admins', params: admin_attributes, headers: @headers
+    expect(response).to have_http_status(:success)
+    expect(response.body).to include(admin_attributes[:admin][:name])
+    expect(response.body).to include(admin_attributes[:admin][:email])
+    expect(Admin.find(JSON.parse(response.body)["id"]).user.user_type).to eq("admin")
+  end
+  it "2. It should not be able to create an admin with invalid attributes ERROR (admins#create)" do
+    post '/api/v1/admins', params: invalid_admin_attributes, headers: @headers
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response.body).to include("Admin account creation failed")
+  end
+  it  "3. It should be able to view all admins (admins#index)" do
+    get '/api/v1/admins', headers: @headers
+    expect(response).to have_http_status(:success)
+    expect(response.body).to include(@admin.name)
+    expect(response.body).to include(@admin.email)
+  end
+  it "4. It should be able to view a single admin (admins#show)" do
+    get "/api/v1/admins/#{@admin.id}", headers: @headers
+    expect(response).to have_http_status(:success)
+    expect(response.body).to include(@admin.name)
+    expect(response.body).to include(@admin.email)
+  end
+  it "5. It should be able to update an admin (admins#update)" do
+    patch "/api/v1/admins/#{@admin.id}" , params: {admin: {name: "Stanley", email: "stanleytarce18@gmail.com"}}, headers: @headers
+    expect(response).to have_http_status(:success)
+    expect(Admin.first.name).to eq("Stanley")
+    expect(Admin.first.user.name).to eq("Stanley")
+  end
+  it "6. It should create a trader account (admins#create_trader)" do
+    post "/api/v1/admins/create_trader", params: valid_trader_attributes, headers: @headers
+    expect(response).to have_http_status(:success)
+    expect(response.body).to include(valid_trader_attributes[:trader][:name])
+    expect(Trader.find(JSON.parse(response.body)["id"]).user.user_type).to eq("trader")
+    expect(Trader.find(JSON.parse(response.body)["id"]).user.email).to eq("ellerreyes82@gmail.com")
+  end
+  it "7. It should not create a trader account without headers (admins#create_trader)" do
+    post "/api/v1/admins/create_trader", params: valid_trader_attributes
+    expect(response).to have_http_status(:unauthorized)
+  end
+  it "8. It should update an admin with one attribute (admins#update_admin)" do
+    patch "/api/v1/admins/#{@admin.id}" , params: {admin: {name: "Stanley"}}, headers: @headers
+    expect(response).to have_http_status(:success)
+    expect(Admin.first.name).to eq("Stanley")
+    expect(Admin.first.user.name).to eq("Stanley")
+    expect(Admin.first.email).to eq(@admin.email)
+  end
+  it "9. It should not create a trader with invalid attributes (admins#create_trader)" do
+    post "/api/v1/admins/create_trader", params: invalid_trader_attributes, headers: @headers
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response.body).to include("Trader account creation failed")
+  end
+ end
+

@@ -4,7 +4,7 @@ RSpec.describe Stock, type: :model do
   before(:each) do
     @stock = FactoryBot.create(:stock)
   end
-  context "Data Creation" do
+ 
     it "1. It should be able to create a new stock" do 
       expect(@stock.valid?).to eq(true)
     end
@@ -43,5 +43,5 @@ RSpec.describe Stock, type: :model do
       @stock.update(total_price: @stock.shares*@stock.price_per_unit)
       expect(@stock.total_price).to eq(12)
     end
-  end 
+
 end

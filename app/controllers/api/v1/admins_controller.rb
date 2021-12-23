@@ -65,7 +65,7 @@ module Api
           if user.save
             trader.user_id = user.id
             if trader.save!
-              render json: { message: 'Trader account created successfully' }, status: 200
+              render json: trader, status: 200
             else
               render json: { error: 'Trader account creation failed' }, status: 422
             end

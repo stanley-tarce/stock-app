@@ -22,7 +22,7 @@ module Api
           trader.user_id = user.id
           if trader.save!
             TraderMailer.with(trader: trader).send_email_receipt.deliver_later
-            render json: { message: 'Trader created successfully' }, status: 200
+            render json:  trader , status: 200
           else
             render json: { errors: trader.errors.full_messages }, status: 422
           end
@@ -44,7 +44,7 @@ module Api
       def update_trader_status
         if authenticate_if_admin!
           if single_trader.update(status: 'approved')
-            TraderMailer.with(trader: trader).approved_account_receipt.deliver_later
+            # TraderMailer.with(trader: trader).approved_account_receipt.deliver_later
             render json: { status: 'approved', message: 'Trader status changed to approved' }, status: 200
           else
             render json: { error: 'Trader status change failed' }, status: 422
@@ -55,14 +55,14 @@ module Api
       end
 
       def show 
-        if authenticate_if_admin!
+        if single_trader
           render json: single_trader, status: 200
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401 
         end
       end
 
-      def delete
+      def destroy
         if authenticate_if_admin!
           if single_trader.destroy
             render json: { message: 'Trader deleted successfully' }, status: 200

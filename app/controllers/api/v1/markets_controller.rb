@@ -1,6 +1,7 @@
 require "#{Rails.root}/app/controllers/modules/market_module"
 
 class Api::V1::MarketsController < ApplicationController
+  before_action [:authenticate_api_v1_user!, :authenticate_api_v1_admin!]
   include MarketsModule
   def index
     if authenticate_if_admin!

@@ -6,7 +6,9 @@ FactoryBot.define do
     name { name }
     email { email }
     wallet { wallet }
-    status { 'pending' }  
+    status { 'pending' }
+    password { 'password' }
+    password_confirmation { 'password' }
     association :user, email: email, name: name
   end
 end

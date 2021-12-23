@@ -1,36 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "Stocks", type: :request do
-  before(:each) do
-    @user = FactoryBot.create(:user)
-    @trader = FactoryBot.create(:trader, user: @user)
-    @trader.status = "approved"
-    @trader.save
-    @market =FactoryBot.create(:market)
-  
-    @sign_up_url = api_v1_user_session_path
-    @sign_in_url = api_v1_user_session_path
-
-    @sign_up_params = {
-      email: @user.email,
-      password: @user.password,
-      password_confirmation: @user.password,
-    }
-
-    @login_params = {
-      email: @user.email,
-      password: @user.password,
-    }
-
-    post @sign_up_url, params: @sign_up_params 
-    @headers = {
-      "access-token": response.headers["access-token"],
-      "uid": response.headers["uid"],
-      "client": response.headers["client"],
-      "expiry": response.headers["expiry"]
-    }
-  end
-
   let(:valid_stocks_attributes) {
     {
       :stock => {
@@ -69,6 +39,36 @@ RSpec.describe "Stocks", type: :request do
     }
   }
 
+  before(:each) do
+    @user = FactoryBot.create(:user)
+    @trader = FactoryBot.create(:trader, user: @user)
+    @trader.status = "approved"
+    @trader.save
+    @market =FactoryBot.create(:market)
+  
+    @sign_up_url = '/api/v1/auth'
+    @sign_in_url = '/api/v1/auth/sign_in'
+
+    @sign_up_params = {
+      email: @user.email,
+      password: @user.password,
+      password_confirmation: @user.password,
+    }
+
+    @login_params = {
+      email: @user.email,
+      password: @user.password,
+    }
+
+    post @sign_in_url, params: @login_params 
+    @headers = {
+      "access-token": response.headers["access-token"],
+      "uid": response.headers["uid"],
+      "client": response.headers["client"],
+      "expiry": response.headers["expiry"]
+    }
+  end
+
   describe "API Testing" do
     context "when admin is signed in" do
       describe "GET /index" do
@@ -98,6 +98,16 @@ RSpec.describe "Stocks", type: :request do
           it "buys more shares of existing stock" do
             s = @trader.stocks.create(valid_stock_attributes)
             post "/api/v1/traders/#{@trader.id}/buy/stocks/#{s.id}", params: valid_stocks_attributes, headers: @headers, as: :json
+            expect(response).to have_http_status(:success)
+          end
+        end
+      end
+
+      describe "POST /sell" do
+        context "with valid parameters" do
+          it "sells shares" do
+            s = @trader.stocks.create(valid_stock_attributes)
+            post "/api/v1/traders/#{@trader.id}/sell/stocks/#{s.id}", params: valid_stocks_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(:success)
           end
         end

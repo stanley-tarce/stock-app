@@ -1,27 +1,35 @@
 require 'rails_helper'
 
 RSpec.describe "Markets", type: :request do
+  let(:market_attributes) {
+    {
+    :stock_name => "AAPL", 
+    :price_per_unit => 1.5, 
+    :percentage_change => "2.7",
+    }
+  }
 
+  let(:invalid_market_attributes) {
+    {
+    :stock_name => nil, 
+    :price_per_unit => nil, 
+    :percentage_change => nil
+    }
+  }
+  
   before(:each) do
     @user = FactoryBot.create(:user, :user_type => "admin")
-    # @admin = FactoryBot.create(:admin, :user => @user)
     @market = FactoryBot.create(:market)
 
-    @sign_up_url = api_v1_user_session_path
-    @sign_in_url = api_v1_user_session_path
-
-    @sign_up_params = {
-      email: @user.email,
-      password: @user.password,
-      password_confirmation: @user.password
-    }
+    @sign_up_url = '/api/v1/auth'
+    @sign_in_url = '/api/v1/auth/sign_in'
 
     @login_params = {
       email: @user.email,
       password: @user.password
     }
 
-    post @sign_up_url, params: @sign_up_params 
+    post @sign_in_url, params: @login_params 
     @headers = {
       "access-token": response.headers["access-token"],
       "uid": response.headers["uid"],
@@ -30,119 +38,74 @@ RSpec.describe "Markets", type: :request do
     }
   end
 
-  let(:valid_attributes) {
-    {
-    :stock_name => "AAPL", 
-    :price_per_unit => 1.5, 
-    :percentage_change => "2.7",
-    }
-  }
-
-  let(:invalid_attributes) {
-    {
-    :stock_name => nil, 
-    :price_per_unit => nil, 
-    :percentage_change => nil
-    }
-  }
-
-  describe "API testing" do
-    context "when admin is signed in" do
-      describe "GET /index" do
-        it "returns the list of markets" do
-          get api_v1_markets_path, headers: @headers, as: :json
-          expect(response).to have_http_status(:success)
-        end
-      end
-
-      describe "GET /show" do
-        it "returns a single market" do
-          get api_v1_market_path(@market.id), headers: @headers, as: :json
-          expect(response).to have_http_status(:success)
-        end
-      end
-
-      describe "POST /create" do
-        context "with valid parameters" do
-          it "creates a new market" do
-            post api_v1_markets_path, params: valid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-        context "with invalid parameters" do
-          it "creates a new market" do
-            post api_v1_markets_path, params: invalid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(422)
-          end
-        end
-      end
-      
-      describe "PATCH /update" do
-        context "with valid parameters" do
-          it "updates the market" do
-            patch api_v1_market_path(@market.id), params: valid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-        context "with invalid parameters" do
-          it "updates the market" do
-            patch api_v1_market_path(@market.id), params: invalid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-        end
-      end
-
-      describe "DELETE /delete" do
-        context "with valid parameters" do
-          it "deletes the current market" do
-            delete api_v1_market_path(@market.id), params: valid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-        context "with invalid parameters" do
-          it "deletes the current market" do
-            delete api_v1_market_path(@market.id), params: invalid_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-      end
+  context "when admin is signed in" do
+    it "1. It should return the list of markets (markets#index)" do
+      get "/api/v1/markets", headers: @headers, as: :json
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(@market.stock_name)
     end
 
-    context "when user is not signed in" do
-      describe "GET /index" do
-        it "returns the list of markets" do
-          get api_v1_markets_path
-          expect(response).to have_http_status(401)
-        end
-      end
+    it "2. It should return a single market (markets#show)" do
+      get "/api/v1/markets/#{@market.id}", headers: @headers, as: :json
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(@market.stock_name)
+    end
 
-      describe "GET /show" do
-        it "returns a single market" do
-          get api_v1_market_path(@market.id)
-          expect(response).to have_http_status(401)
-        end
-      end
+    it "3. It should create a new market (markets#create)" do
+      post "/api/v1/markets", params: market_attributes, headers: @headers, as: :json
+      expect(response).to have_http_status(:success)
+      expect(Market.count).to eq(2)
+    end
 
-      describe "POST /create" do
-        it "creates a new market" do
-          post api_v1_markets_path, params: valid_attributes
-          expect(response).to have_http_status(401)
-        end
-      end
+    it "4. It should not be able to create a new market" do
+      post "/api/v1/markets", params: invalid_market_attributes, headers: @headers, as: :json
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+    
+    it "5. It should update the market (markets#update)" do
+      patch "/api/v1/markets/#{@market.id}", params: {stock_name: "NKE", price_per_unit: 2, percentage_change: "3.0"}, headers: @headers, as: :json
+      expect(response).to have_http_status(:success)
+      expect(Market.last.stock_name).to eq("NKE")
+      expect(Market.last.price_per_unit).to eq(2)
+      expect(Market.last.percentage_change).to eq("3.0")
+    end
 
-      describe "PATCH /update" do
-        it "updates the market" do
-          patch api_v1_market_path(@market.id), params: valid_attributes
-          expect(response).to have_http_status(401)
-        end
-      end
+    it "6. It should not be able to update a market" do
+      patch "/api/v1/markets/#{@market.id}", params: invalid_market_attributes, headers: @headers, as: :json
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
 
-      describe "DELETE /delete" do
-        it "deletes the current market" do
-          delete api_v1_market_path(@market.id), params: valid_attributes
-          expect(response).to have_http_status(401)
-        end
-      end
+    it "7. It should delete selected market" do
+      delete "/api/v1/markets/#{@market.id}", params: market_attributes, headers: @headers, as: :json
+      expect(response).to have_http_status(:success)
+      expect(Market.count).to eq(0)
+    end
+  end
+
+  context "when user is not signed in" do
+    it "8. It should not be able to view all markets (markets#index)" do
+      get "/api/v1/markets"
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "9. It should not be able to view a single market (markets#show)" do
+      get "/api/v1/markets/#{@market.id}"
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "10. It should not be able to create a market (markets#create)" do
+      post "/api/v1/markets", params: market_attributes
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "11. It should not be able to update a market (markets#update)" do
+      patch "/api/v1/markets/#{@market.id}", params: market_attributes
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "12. It should not be able to delete a market (markets#delete)" do
+      delete "/api/v1/markets/#{@market.id}", params: market_attributes
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 end

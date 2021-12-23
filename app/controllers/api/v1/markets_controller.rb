@@ -1,21 +1,19 @@
 require "#{Rails.root}/app/controllers/modules/markets_module"
 
 class Api::V1::MarketsController < ApplicationController
-  before_action [:authenticate_api_v1_user!, :authenticate_api_v1_admin!]
+  before_action :authenticate_api_v1_user!
   include MarketsModule
   def index
-    if authenticate_if_admin!
       render json: market_all
-    else
-      render json: { error: 'You are not authorized to view this page.' }, status: 401
-    end
+      # render json: { error: 'You are not authorized to view this page.' }, status: 401
+
   end
   def show
-    if authenticate_if_admin!
+
       render json: market_single
-    else
-      render json: { error: 'You are not authorized to view this page.' }, status: 401
-    end
+
+      # render json: { error: 'You are not authorized to view this page.' }, status: 401
+
   end
   def create 
     if authenticate_if_admin!

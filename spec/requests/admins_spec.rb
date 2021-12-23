@@ -75,7 +75,7 @@ RSpec.describe "Admins", type: :request do
     context "when admin is signed in" do
       describe "GET /index" do
         it "returns the list of admins" do
-          get api_v1_admins_path, headers: @headers, as: :jsorouten
+          get api_v1_admins_path, headers: @headers, as: :json
           expect(response).to have_http_status(:success)
         end
       end
@@ -96,7 +96,7 @@ RSpec.describe "Admins", type: :request do
       end
 
       describe "PATCH /update" do
-        context "with valid parameters" do
+        context "with valid parWameters" do
           it "updates an admin" do
             patch api_v1_admin_path(id: @admin.id), params: valid_attributes, headers: @headers, as: :json
             expect(response).to have_http_status(:success)

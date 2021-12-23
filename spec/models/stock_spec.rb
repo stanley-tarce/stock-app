@@ -1,10 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Stock, type: :model do
-  # pending "add some examples to (or delete) #{__FILE__}"
   context "Data Creation" do
-   
-
     it "should be able to create a new stock" do 
       @stock = FactoryBot.create(:stock) 
       expect(@stock.valid?).to eq(true)

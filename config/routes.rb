@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       get 'traders/updatestatus/:id', to: 'traders#update_trader_status'
       resources :traders do
         resources :stocks
+        get 'buy/stocks/:id', to: 'stocks#buy'
+        post 'sell/stocks/:id', to: 'stocks#sell' 
       end
       resource :markets
     end

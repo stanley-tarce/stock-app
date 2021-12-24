@@ -72,6 +72,19 @@ module Api
         end
       end
 
+      def top_up
+        cash = 5000
+        trader = current_api_v1_user.trader
+        new_wallet = trader.update(wallet: trader.wallet + cash)
+        new_wallet.save
+
+        if new_wallet.save
+          render json: { message: 'Top up is successful' }, status: 200
+        else
+          render json: { error: 'top up failed' }, status: 422
+        end
+      end
+
       private
 
       def all_trader

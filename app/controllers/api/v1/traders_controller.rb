@@ -44,7 +44,7 @@ module Api
       def update_trader_status
         if authenticate_if_admin!
           if single_trader.update(status: 'approved')
-            # TraderMailer.with(trader: trader).approved_account_receipt.deliver_later
+            TraderMailer.with(trader: single_trader).approved_account_receipt.deliver_later
             render json: { status: 'approved', message: 'Trader status changed to approved' }, status: 200
           else
             render json: { error: 'Trader status change failed' }, status: 422
@@ -69,6 +69,19 @@ module Api
           else
             render json: { error: 'Trader deletion failed' }, status: 422
           end
+        end
+      end
+
+      def top_up
+        cash = 5000
+        trader = current_api_v1_user.trader
+        new_wallet = trader.update(wallet: trader.wallet + cash)
+        new_wallet.save
+
+        if new_wallet.save
+          render json: { message: 'Top up is successful' }, status: 200
+        else
+          render json: { error: 'top up failed' }, status: 422
         end
       end
 

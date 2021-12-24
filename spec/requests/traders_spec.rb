@@ -24,6 +24,8 @@ RSpec.describe "Trader API Testing", type: :request do
     }
   }
 
+  let(:mail) { TraderMailer.send_email_receipt }
+
   before(:each) do
     @trader = FactoryBot.build(:trader)
     @user = FactoryBot.build(:user)
@@ -65,6 +67,7 @@ RSpec.describe "Trader API Testing", type: :request do
       expect(User.find(JSON.parse(response.body)["user_id"]).name).to eq(JSON.parse(response.body)["name"])
       expect(User.find(JSON.parse(response.body)["user_id"]).user_type).to include("trader")
   end
+
   it "3. It should not create a new Trader with invalid attributes" do
     post '/api/v1/traders', params: invalid_attributes, headers: @headers
     expect(response).to have_http_status(:unprocessable_entity)

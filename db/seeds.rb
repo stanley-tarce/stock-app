@@ -28,7 +28,8 @@
     endpoint: 'https://cloud.iexapis.com/v1'
   )
 
-  stocks = [ 'AAPL', 'TSLA', 'NKE' ]
+  stocks = [ 'AAPL', 'TSLA', 'NKE', 'ACN', 'UL', 'UBER', 'AMZN', 'AUDVF', 'AMD', 'MSFT', 'PXLW', 'ADBE', 'VZ', 'CAJFF', 'NINOF', 'FUJIF', 'SONY', 'MBFJF', 'TOYOF', 'PHG', 'CSIOF', 'YAMHF','KO', 'PEP', 'CAT', 'TWTR', 'NVDA', 'WACMF', 'H', 'COST', 'DELL', 'GDDY', 'SEKEF', 'STNE', 'BA', 'DIS', 'HD', 'SBUX', 'GME', 'ADDDF', 'TGT', 'UA', 'SSNLF', 'INTC', 'WYNN', 'LVS', 'DISCA', 'QCOM', 'BABAF' ]
+
   stocks.each do |stock|
     quote = client.quote(stock)
     Market.create(stock_name: stock, price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s)

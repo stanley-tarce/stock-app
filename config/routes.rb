@@ -13,7 +13,9 @@ Rails.application.routes.draw do
       resources :traders do
         resources :stocks
         patch 'buy/stocks/:id', to: 'stocks#buy_update'
-        patch 'sell/stocks/:id', to: 'stocks#sell_update' 
+        patch 'sell/stocks/:id', to: 'stocks#sell_update'
+        patch 'cash_in', to: "traders#cash_in"
+        patch 'cash_out', to: "traders#cash_out" 
       end
       resources :markets
     end

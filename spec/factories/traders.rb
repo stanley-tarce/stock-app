@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 name = Faker::Name.name
 wallet = Faker::Number.decimal(l_digits: 6)
-email = name.downcase.gsub(' ', '_') + '@yahoo.com'
+email = "#{name.downcase.gsub(' ', '_')}@yahoo.com"
 FactoryBot.define do
   factory :trader do
     name { name }

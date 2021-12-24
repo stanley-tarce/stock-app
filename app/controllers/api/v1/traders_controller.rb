@@ -72,18 +72,39 @@ module Api
         end
       end
 
-      def top_up
-        cash = 5000
+      def cash_in
         trader = current_api_v1_user.trader
-        new_wallet = trader.update(wallet: trader.wallet + cash)
-        new_wallet.save
+        if !(check_if_number?(params[:trader][:wallet]))
+          return render json: { error: 'Please enter a valid amount' }, status: 422
+        end
+        new_wallet = trader.update(wallet: trader.wallet + params[:trader][:wallet].to_f)
 
-        if new_wallet.save
+        if new_wallet
+     
           render json: { message: 'Top up is successful' }, status: 200
         else
           render json: { error: 'top up failed' }, status: 422
         end
       end
+
+      def cash_out
+        trader = current_api_v1_user.trader
+        if !(check_if_number?(params[:trader][:wallet]))
+          return render json: { error: 'Please enter a valid amount' }, status: 422
+        end
+        
+        if (params[:trader][:wallet].to_f > trader.wallet)
+          render json: { error: 'Insufficient funds' }, status: 422
+        else
+          new_wallet = trader.update(wallet: trader.wallet - params[:trader][:wallet].to_f)
+          if new_wallet
+            render json: { message: 'Withdrawal is successful' }, status: 200
+          else
+            render json: { error: 'Withdrawal failed' }, status: 422
+          end
+        end
+      end
+
 
       private
 
@@ -93,6 +114,10 @@ module Api
 
       def single_trader
         Trader.find(params[:id])
+      end
+
+      def check_if_number?(value)
+        value.to_i.to_s == value
       end
     end
   end

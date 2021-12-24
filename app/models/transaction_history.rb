@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransactionHistory < ApplicationRecord
   belongs_to :trader
   validates :stock_name, presence: true

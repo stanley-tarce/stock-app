@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :transaction_history do
     stock_name { nil }
@@ -8,5 +10,3 @@ FactoryBot.define do
     association :trader
   end
 end
-
-

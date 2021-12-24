@@ -9,7 +9,7 @@ class Api::V1::StocksController < ApplicationController
   end
   def create
     if !(authenticate_if_admin!) && authenticate_trader_status!
-      puts params.inspect
+
       trader = current_api_v1_user.trader
       market = Market.find(params[:stock][:market_id])
       stock = trader.stocks.new(stock_params)
@@ -35,7 +35,6 @@ class Api::V1::StocksController < ApplicationController
 
   def buy_update
     if !(authenticate_if_admin!) && authenticate_trader_status!
-      # puts params.inspect
       trader = current_api_v1_user.trader
       old_stock_shares = single_stock.shares
       market = Market.find(single_stock.market_id)
@@ -88,7 +87,6 @@ class Api::V1::StocksController < ApplicationController
     end
   end
   def show
-    puts params.inspect
     render json: single_stock
   end
 

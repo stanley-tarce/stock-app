@@ -7,9 +7,9 @@ class Api::V1::StocksController < ApplicationController
   def index
     render json: stock_all
   end
-
   def create
     if !(authenticate_if_admin!) && authenticate_trader_status!
+      puts params.inspect
       trader = current_api_v1_user.trader
       market = Market.find(params[:stock][:market_id])
       stock = trader.stocks.new(stock_params)
@@ -87,7 +87,8 @@ class Api::V1::StocksController < ApplicationController
        render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized     
     end
   end
-  def show 
+  def show
+    puts params.inspect
     render json: single_stock
   end
 

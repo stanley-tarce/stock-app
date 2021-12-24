@@ -19,10 +19,12 @@ class Api::V1::StocksController < ApplicationController
       if (trader.wallet < stock.total_price)
         return render json: { error: 'Insufficient Funds' }, status: 422 
       end
-      transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: stock.total_price, trader: trader, stock_name: market.stock_name)
+      trader.update(wallet: trader.wallet - stock.total_price)
+      transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: stock.total_price, trader: trader, stock_name: market.stock_name, balance: trader.wallet)
+      transaction.save
       
-      if stock.save && transaction.save
-        render json: trader.stocks, status: 200
+      if stock.save 
+        render json: transaction, status: 200
       else
         render json: { errors: 'Stock creation failed' }, status: 422
       end
@@ -31,46 +33,50 @@ class Api::V1::StocksController < ApplicationController
     end
   end
 
-  def buy
+  def buy_update
     if !(authenticate_if_admin!) && authenticate_trader_status!
+      # puts params.inspect
       trader = current_api_v1_user.trader
       old_stock_shares = single_stock.shares
-      market = Market.find(params[:stock][:market_id])
-      buy_value = single_stock.price_per_unit * params[:stock][:shares].to_i
+      market = Market.find(single_stock.market_id)
+      buy_value = single_stock.price_per_unit * params[:shares].to_i
       if (trader.wallet < buy_value)
         return render json: { error: 'Insufficient Funds' }, status: 422
       end
-      new_stock_shares = old_stock_shares + params[:stock][:shares].to_i
-      if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
-        transaction = trader.transaction_histories.new(shares: params[:stock][:shares], price_per_unit: market.price_per_unit, total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
-        if transaction.save 
-          render json: trader.stocks, status: 200
+      new_stock_shares = old_stock_shares + params[:shares].to_i
+      trader.wallet -= buy_value
+      new_total_price = new_stock_shares * single_stock.price_per_unit
+      if single_stock.update(shares: new_stock_shares, total_price: new_total_price)
+        transaction = trader.transaction_histories.new(shares: params[:shares], price_per_unit: market.price_per_unit, total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name, balance: trader.wallet)
+        if transaction.save
+          render json: trader.transaction_histories.all, status: 200
         else
-          render json: { errors: 'Stock update failed' }, status: 422
+          render json: { errors: 'Stock update failed1' }, status: 422
         end
       else
-        render json: { errors: 'Stock update failed' }, status: 422
+        render json: { errors: 'Stock update failed2' }, status: 422
       end
     else
       render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized     
     end
   end
-  def sell
+  def sell_update
     if !(authenticate_if_admin!) && authenticate_trader_status!
       trader = current_api_v1_user.trader
       old_stock_shares = single_stock.shares
-      new_stock_shares = old_stock_shares - params[:stock][:shares].to_i
-      new_wallet = single_stock.price_per_unit * params[:stock][:shares].to_i
-      trader.wallet = trader.wallet + new_wallet
+      market = Market.find(single_stock.market_id)
+      new_stock_shares = old_stock_shares - params[:shares].to_i
+      new_wallet = single_stock.price_per_unit * params[:shares].to_i
+      trader.wallet += new_wallet
       if new_stock_shares < 0
-        single_stock.delete
-        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
+        single_stock.destroy
+        transaction = trader.transaction_histories.new(shares: params[:shares],price_per_unit: market.price_per_unit,total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
         return render json: { message: "Stocks Deleted"}, status: 200
       end
-      if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares*single_stock.price_per_unit)
-        transaction = trader.transaction_histories.new(shares: params[:stock][:shares],price_per_unit: market.price_per_unit,total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name)
+      if single_stock.update(shares: new_stock_shares, total_price: new_stock_shares * single_stock.price_per_unit)
+       transaction = trader.transaction_histories.new(shares: params[:shares], price_per_unit: market.price_per_unit, total_price: single_stock.total_price, trader: trader, stock_name: market.stock_name, balance: trader.wallet)
         if transaction.save 
-          render json: trader.stocks, status: 200
+          render json: trader.transaction_histories.all, status: 200
         else
           render json: { errors: 'Stock update failed' }, status: 422
         end
@@ -78,9 +84,11 @@ class Api::V1::StocksController < ApplicationController
         render json: { errors: 'Stock update failed' }, status: 422
       end
     else
-       #Continue here
        render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized     
     end
+  end
+  def show 
+    render json: single_stock
   end
 
   private

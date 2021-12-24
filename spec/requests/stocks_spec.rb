@@ -1,51 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe "Stocks", type: :request do
-  let(:valid_stocks_attributes) {
-    {
-      :stock => {
-        :shares => "3", 
-        :price_per_unit => "4",
-        :total_price => "12", 
-        :trader_id => @trader.id,
-        :stock_name => "AAPL",
-        :market_id => @market.id,
-      }
-
-    }
-  }
-
-  let(:valid_stock_attributes) {
-    {  
-      :shares => "3", 
-      :price_per_unit => "4",
-      :total_price => "12", 
-      :trader_id => @trader.id,
-      :stock_name => "AAPL",
-      :market_id => @market.id,
-    }
-  }
-
-  let(:invalid_stocks_attributes) {
-    {
-      :stock => {
-        :shares => nil, 
-        :price_per_unit => nil,
-        :total_price => nil, 
-        :stock_name => nil,
-        :trader_id => nil,
-        :market_id => @market.id,
-      }
-    }
-  }
-
+ 
   before(:each) do
-    @user = FactoryBot.create(:user)
-    @trader = FactoryBot.create(:trader, user: @user)
+    
+    @trader = FactoryBot.build(:trader, status: "approved" )
+    @user = FactoryBot.build(:user, :email => @trader.email, :name => @trader.name, :password => @trader.password, :password_confirmation => @trader.password)
     @trader.status = "approved"
+    @trader.update(user: @user) 
+    @user.save
     @trader.save
-    @market =FactoryBot.create(:market)
-  
+    @market = FactoryBot.create(:market)
+
     @sign_up_url = '/api/v1/auth'
     @sign_in_url = '/api/v1/auth/sign_in'
 
@@ -67,51 +33,81 @@ RSpec.describe "Stocks", type: :request do
       "client": response.headers["client"],
       "expiry": response.headers["expiry"]
     }
-  end
-
-  describe "API Testing" do
-    context "when admin is signed in" do
-      describe "GET /index" do
-        it "returns the list of stocks a trader owns" do
-          get api_v1_trader_stocks_path(@trader.id), headers: @headers, as: :json
-          expect(response).to have_http_status(:success)
-        end
-      end
     
-      describe "POST /create" do
-        context "with valid parameters" do
-          it "creates or buys a new stock" do
-            post api_v1_trader_stocks_path(@trader.id), params: valid_stocks_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-        context "with invalid parameters" do
-          it "creates or buys a new stock" do
-            post api_v1_trader_stocks_path(@trader.id), params: invalid_stocks_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(422)
-          end
-        end
-      end
 
-      describe "POST /buy" do
-        context "with valid parameters" do
-          it "buys more shares of existing stock" do
-            s = @trader.stocks.create(valid_stock_attributes)
-            post "/api/v1/traders/#{@trader.id}/buy/stocks/#{s.id}", params: valid_stocks_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-      end
+    
+  end
+  it "1. It should buy a stock with valid attributes" do
+    params = {
+      :stock => {
+        :market_id => 1,
+        :shares => 100
+      }
+    }
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    post "/api/v1/traders/#{@trader.id}/stocks", params: params, headers: @headers
+    expect(response).to have_http_status(200)
+   end
+  it "2. It should find the selected stock (show)" do
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit)
+    @stock.total_price = @market.price_per_unit * @stock.shares
+    @stock.save
+    @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
+    get "/api/v1/traders/#{@trader.id}/stocks/#{Trader.find(@trader.id).stocks.first.id}", headers: @headers
+    expect(response).to have_http_status(200)
+  end
+  it "3. It should update the stock via buy method" do 
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit)
+    @stock.total_price = @market.price_per_unit * @stock.shares
+    @stock.save
+    @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
 
-      describe "POST /sell" do
-        context "with valid parameters" do
-          it "sells shares" do
-            s = @trader.stocks.create(valid_stock_attributes)
-            post "/api/v1/traders/#{@trader.id}/sell/stocks/#{s.id}", params: valid_stocks_attributes, headers: @headers, as: :json
-            expect(response).to have_http_status(:success)
-          end
-        end
-      end
-    end
+    patch "/api/v1/traders/#{@trader.id}/buy/stocks/#{Trader.find(@trader.id).stocks.first.id}", params: {shares: 200}, headers: @headers
+    expect(response).to have_http_status(200)
+  end
+  it "4. It should update the stock via sell method" do
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit)
+    @stock.total_price = @market.price_per_unit * @stock.shares
+    @stock.save
+    @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
+    patch "/api/v1/traders/#{@trader.id}/sell/stocks/#{Trader.find(@trader.id).stocks.first.id}", params: {shares: 10}, headers: @headers
+    expect(response).to have_http_status(200)
+  end
+  it "5. It should not create a stock if funds are insuficient" do
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(wallet: 0)
+     params = {
+      :stock => {
+        :market_id => 1,
+        :shares => 100
+      }
+    }
+    post "/api/v1/traders/#{@trader.id}/stocks", params: params, headers: @headers
+    expect(response).to have_http_status(422)
+  end
+  it "6. It should not update a stock if funds are insuficient" do 
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit)
+    @stock.total_price = @market.price_per_unit * @stock.shares
+    @stock.save
+    @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name, price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(wallet: 0)
+    patch "/api/v1/traders/#{@trader.id}/buy/stocks/#{Trader.find(@trader.id).stocks.first.id}", params: {shares: 200}, headers: @headers
+    expect(response).to have_http_status(422)
+  end
+  it "7. It should not create a stock without shares" do
+    User.find(JSON.parse(response.body)["data"]["id"]).trader.update(status: "approved")
+    params = {
+      :stock => {
+        :market_id => 1,
+        :shares => nil
+      }
+    }
+    post "/api/v1/traders/#{@trader.id}/stocks", params: params, headers: @headers
+    expect(response).to have_http_status(422)
   end
 end
+

@@ -1,5 +1,5 @@
 name = Faker::Name.name
-wallet = Faker::Number.decimal(l_digits: 4)
+wallet = Faker::Number.decimal(l_digits: 6)
 email = name.downcase.gsub(' ', '_') + '@yahoo.com'
 FactoryBot.define do
   factory :trader do

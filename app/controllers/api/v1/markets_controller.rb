@@ -5,15 +5,9 @@ class Api::V1::MarketsController < ApplicationController
   include MarketsModule
   def index
       render json: market_all
-      # render json: { error: 'You are not authorized to view this page.' }, status: 401
-
   end
   def show
-
       render json: market_single
-
-      # render json: { error: 'You are not authorized to view this page.' }, status: 401
-
   end
   def create 
     if authenticate_if_admin!

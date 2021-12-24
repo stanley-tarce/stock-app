@@ -38,7 +38,7 @@ RSpec.describe "Markets", type: :request do
     }
   end
 
-  context "when admin is signed in" do
+  context "When user is signed in" do
     it "1. It should return the list of markets (markets#index)" do
       get "/api/v1/markets", headers: @headers, as: :json
       expect(response).to have_http_status(:success)
@@ -82,7 +82,7 @@ RSpec.describe "Markets", type: :request do
     end
   end
 
-  context "when user is not signed in" do
+  context "When user is not signed in" do
     it "8. It should not be able to view all markets (markets#index)" do
       get "/api/v1/markets"
       expect(response).to have_http_status(:unauthorized)

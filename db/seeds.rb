@@ -4,7 +4,7 @@
 # Examples:
 require 'csv'
 require 'json'
-  admindetails = [{:name => "Stanley Tarce", :email => "stanleytarce18@gmail.com", :password => "1234567", :password_confirmation => "1234567"}, ]
+  admindetails = [{:name => "Stanley Tarce", :email => "stanleytarce18@gmail.com", :password => "1234567", :password_confirmation => "1234567"}, {:name => "Leandra Panopio", :email => "leandrapanopio@gmail.com", :password => "7654321", :password_confirmation => "7654321"}]
   admindetails.each do |detail|
     exceptions = [ :password, :password_confirmation]
     admin = Admin.new(detail.except(*exceptions))

@@ -75,7 +75,7 @@ RSpec.describe 'Admin API Testing', type: :request do
   it '2. It should not be able to create an admin with invalid attributes ERROR (admins#create)' do
     post '/api/v1/admins', params: invalid_admin_attributes, headers: @headers
     expect(response).to have_http_status(:unprocessable_entity)
-    expect(response.body).to include('Admin account creation failed')
+    expect(response.body).to include("error")
   end
   it '3. It should be able to view all admins (admins#index)' do
     get '/api/v1/admins', headers: @headers
@@ -117,6 +117,6 @@ RSpec.describe 'Admin API Testing', type: :request do
   it '9. It should not create a trader with invalid attributes (admins#create_trader)' do
     post '/api/v1/admins/create_trader', params: invalid_trader_attributes, headers: @headers
     expect(response).to have_http_status(:unprocessable_entity)
-    expect(response.body).to include('Trader account creation failed')
+    expect(response.body).to include("error")
   end
 end

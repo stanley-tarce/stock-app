@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "#{Rails.root}/app/controllers/modules/admins_module"
 require "#{Rails.root}/app/controllers/modules/traders_module"
 module Api
@@ -14,26 +15,29 @@ module Api
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
       end
-      def show 
+
+      def show
         if authenticate_if_admin!
           render json: single_admin
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
       end
+
       def update
         if authenticate_if_admin!
           user = User.find_by(id: single_admin[:user_id])
           if single_admin.update(admin_params)
             user.update(name: single_admin.name, email: single_admin.email)
-            render json: { message: 'Admin updated successfully' }, status: 200 
+            render json: { message: 'Admin updated successfully' }, status: 200
           else
-            render json: { errors: "Admin Update not successful" }, status: :unprocessable_entity
+            render json: { errors: 'Admin Update not successful' }, status: :unprocessable_entity
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
         end
       end
+
       def create
         if authenticate_if_admin!
           exceptions = %i[password password_confirmation]
@@ -45,10 +49,10 @@ module Api
             if admin.save!
               render json: admin, status: 200
             else
-              render json: { errors: admin.errors.full_messages }, status: 422
+              render json: { error: admin.errors.full_messages }, status: 422
             end
           else
-            render json: { errors: user.errors.full_messages }, status: 422
+            render json: { error: user.errors.full_messages }, status: 422
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401
@@ -60,7 +64,7 @@ module Api
           exceptions = %i[password password_confirmation]
           trader = Trader.new(trader_params.except(*exceptions))
           user = User.new(email: trader.email, password: params[:trader][:password], password_confirmation: params[:trader][:password_confirmation],
-                             user_type: 'trader')
+                          user_type: 'trader')
           if user.save
             trader.user_id = user.id
             if trader.save!
@@ -76,7 +80,8 @@ module Api
         end
       end
 
-      private 
+      private
+
       def all_admin
         Admin.all
       end

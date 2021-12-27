@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+
 class Trader < ApplicationRecord
   has_many :transaction_histories
   belongs_to :user, dependent: :destroy # has-one

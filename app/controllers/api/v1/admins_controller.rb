@@ -28,7 +28,7 @@ module Api
             user.update(name: single_admin.name, email: single_admin.email)
             render json: { message: 'Admin updated successfully' }, status: 200 
           else
-            render json: { error: 'Admin update failed' }, status: :unprocessable_entity
+            render json: { errors: "Admin Update not successful" }, status: :unprocessable_entity
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: :unauthorized
@@ -36,7 +36,6 @@ module Api
       end
       def create
         if authenticate_if_admin!
-          # puts request.headers['access-token']
           exceptions = %i[password password_confirmation]
           admin = Admin.new(admin_params.except(*exceptions))
           user = User.create(email: admin.email, password: params[:admin][:password], password_confirmation: params[:admin][:password_confirmation],
@@ -46,10 +45,10 @@ module Api
             if admin.save!
               render json: admin, status: 200
             else
-              render json: { errors: 'Admin account creation failed' }, status: 422
+              render json: { errors: admin.errors.full_messages }, status: 422
             end
           else
-            render json: { errors: 'Admin account creation failed' }, status: 422
+            render json: { errors: user.errors.full_messages }, status: 422
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401
@@ -67,10 +66,10 @@ module Api
             if trader.save!
               render json: trader, status: 200
             else
-              render json: { error: 'Trader account creation failed' }, status: 422
+              render json: { error: trader.errors.full_messages }, status: 422
             end
           else
-            render json: { error: 'Trader account creation failed' }, status: 422
+            render json: { error: trader.errors.full_messages }, status: 422
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401

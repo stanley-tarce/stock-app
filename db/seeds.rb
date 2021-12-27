@@ -13,7 +13,7 @@ require 'json'
     admin.save!
   end
 
-  traderdetail = [{:name => "Stanley Tarce", :email => "stanleytarce181@gmail.com", :password => "1234567", :password_confirmation => "1234567"}]
+  traderdetail = [{:name => "Stanley Tarce Trader", :email => "stanleytarce1801@gmail.com", :password => "1234567", :password_confirmation => "1234567"}]
   traderdetail.each do |detail|
     exceptions = [ :password, :password_confirmation]
     trader = Trader.new(detail.except(*exceptions))
@@ -23,22 +23,22 @@ require 'json'
   end
  
 
-  client = IEX::Api::Client.new(
-    publishable_token: 'pk_9a4005e57b274b3d9e2bd747f1b34bb5',
-    secret_token: 'sk_c0449ed5b4dc4051b2793339526c980c',
-    endpoint: 'https://cloud.iexapis.com/v1'
-  )
+  # client = IEX::Api::Client.new(
+  #   publishable_token: 'pk_9a4005e57b274b3d9e2bd747f1b34bb5',
+  #   secret_token: 'sk_c0449ed5b4dc4051b2793339526c980c',
+  #   endpoint: 'https://cloud.iexapis.com/v1'
+  # )
 
-  stocks = [ 'AAPL', 'TSLA', 'NKE', 'ACN', 'UL', 'UBER', 'AMZN', 'AUDVF', 'AMD', 'MSFT', 'PXLW', 'ADBE', 'VZ', 'CAJFF', 'NINOF', 'FUJIF', 'SONY', 'MBFJF', 'TOYOF', 'PHG', 'CSIOF', 'YAMHF','KO', 'PEP', 'CAT', 'TWTR', 'NVDA', 'WACMF', 'H', 'COST', 'DELL', 'GDDY', 'SEKEF', 'STNE', 'BA', 'DIS', 'HD', 'SBUX', 'GME', 'ADDDF', 'TGT', 'UA', 'SSNLF', 'INTC', 'WYNN', 'LVS', 'DISCA', 'QCOM', 'BABAF' ]
+  # stocks = [ 'AAPL', 'TSLA', 'NKE', 'ACN', 'UL', 'UBER', 'AMZN', 'AUDVF', 'AMD', 'MSFT', 'PXLW', 'ADBE', 'VZ', 'CAJFF', 'NINOF', 'FUJIF', 'SONY', 'MBFJF', 'TOYOF', 'PHG', 'CSIOF', 'YAMHF','KO', 'PEP', 'CAT', 'TWTR', 'NVDA', 'WACMF', 'H', 'COST', 'DELL', 'GDDY', 'SEKEF', 'STNE', 'BA', 'DIS', 'HD', 'SBUX', 'GME', 'ADDDF', 'TGT', 'UA', 'SSNLF', 'INTC', 'WYNN', 'LVS', 'DISCA', 'QCOM', 'BABAF' ]
 
-  stocks.each do |stock|
-    quote = client.quote(stock)
-    Market.create(stock_name: quote.company_name, price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s, symbol: stock)
-  end
+  # stocks.each do |stock|
+  #   quote = client.quote(stock)
+  #   Market.create(stock_name: quote.company_name, price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s, symbol: stock)
+  # end
 
-# data = File.open("#{Rails.root}/markets.csv").read
-# csv = CSV.new(data, :headers => true, :header_converters => :symbol)
-# csv.map {|row| row.to_hash}.each do |data|
-#   Market.create(stock_name: data[:stock_name], price_per_unit: data[:price_per_unit], percentage_change: data[:percentage_change])
-# end
+data = File.open("#{Rails.root}/markets.csv").read
+csv = CSV.new(data, :headers => true, :header_converters => :symbol)
+csv.map {|row| row.to_hash}.each do |data|
+  Market.create(stock_name: data[:stock_name], price_per_unit: data[:price_per_unit], percentage_change: data[:percentage_change])
+end
 

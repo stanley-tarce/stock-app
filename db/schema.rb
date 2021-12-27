@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_20_110355) do
+ActiveRecord::Schema.define(version: 2021_12_27_095918) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2021_12_20_110355) do
     t.string "percentage_change"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "symbol"
   end
 
   create_table "stocks", force: :cascade do |t|
@@ -43,6 +44,7 @@ ActiveRecord::Schema.define(version: 2021_12_20_110355) do
     t.bigint "market_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "symbol"
     t.index ["market_id"], name: "index_stocks_on_market_id"
     t.index ["trader_id"], name: "index_stocks_on_trader_id"
   end
@@ -69,6 +71,8 @@ ActiveRecord::Schema.define(version: 2021_12_20_110355) do
     t.bigint "trader_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "transaction_type"
+    t.string "symbol"
     t.index ["trader_id"], name: "index_transaction_histories_on_trader_id"
   end
 

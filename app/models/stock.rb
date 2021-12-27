@@ -5,7 +5,7 @@ class Stock < ApplicationRecord
   validates :stock_name, presence: true
   validates :shares, presence: true
   validates :price_per_unit, presence: true
-  belongs_to :trader, dependent: :destroy
+  belongs_to :trader
   belongs_to :market
 
   private

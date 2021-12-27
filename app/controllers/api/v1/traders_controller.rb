@@ -77,7 +77,8 @@ module Api
         if !(check_if_number?(params[:trader][:wallet]))
           return render json: { error: 'Please enter a valid amount' }, status: 422
         end
-        new_wallet = trader.update(wallet: trader.wallet + params[:trader][:wallet].to_f)
+        puts params.inspect 
+        new_wallet = trader.update(wallet: (trader.wallet.to_f + params[:trader][:wallet].to_f))
 
         if new_wallet
      
@@ -96,7 +97,7 @@ module Api
         if (params[:trader][:wallet].to_f > trader.wallet)
           render json: { error: 'Insufficient funds' }, status: 422
         else
-          new_wallet = trader.update(wallet: trader.wallet - params[:trader][:wallet].to_f)
+          new_wallet = trader.update(wallet: trader.wallet.to_f - params[:trader][:wallet].to_f)
           if new_wallet
             render json: { message: 'Withdrawal is successful' }, status: 200
           else

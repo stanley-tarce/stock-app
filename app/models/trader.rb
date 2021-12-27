@@ -2,7 +2,7 @@
 
 class Trader < ApplicationRecord
   has_many :transaction_histories
-  belongs_to :user # has-one
+  belongs_to :user, dependent: :destroy # has-one
   before_create :set_trader_status!
   has_many :stocks
   has_many :markets, through: :stocks

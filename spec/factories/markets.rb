@@ -8,5 +8,6 @@ FactoryBot.define do
     stock_name { stock_name }
     price_per_unit { price_per_unit }
     percentage_change { '+14%' }
+    symbol { 'AAPL' }
   end
 end

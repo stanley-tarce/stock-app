@@ -44,27 +44,28 @@ RSpec.describe 'Stocks', type: :request do
     }
     User.find(JSON.parse(response.body)['data']['id']).trader.update(status: 'approved')
     post "/api/v1/traders/#{@trader.id}/stocks", params: params, headers: @headers
+    puts response.body
     expect(response).to have_http_status(200)
   end
   it '2. It should find the selected stock (show)' do
     User.find(JSON.parse(response.body)['data']['id']).trader.update(status: 'approved')
     @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name,
-                                      price_per_unit: @market.price_per_unit)
+                                      price_per_unit: @market.price_per_unit, symbol: @market.symbol)
     @stock.total_price = @market.price_per_unit * @stock.shares
     @stock.save
     @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name,
-                                                                   price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
+                                                                   price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares, symbol: @market.symbol)
     get "/api/v1/traders/#{@trader.id}/stocks/#{Trader.find(@trader.id).stocks.first.id}", headers: @headers
     expect(response).to have_http_status(200)
   end
   it '3. It should update the stock via buy method' do
     User.find(JSON.parse(response.body)['data']['id']).trader.update(status: 'approved')
     @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name,
-                                      price_per_unit: @market.price_per_unit)
+                                      price_per_unit: @market.price_per_unit, symbol: @market.symbol)
     @stock.total_price = @market.price_per_unit * @stock.shares
     @stock.save
     @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name,
-                                                                   price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
+                                                                   price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares, symbol: @market.symbol, transaction_type: 'buy')
 
     patch "/api/v1/traders/#{@trader.id}/buy/stocks/#{Trader.find(@trader.id).stocks.first.id}", params: { shares: 200 },
                                                                                                  headers: @headers
@@ -73,11 +74,11 @@ RSpec.describe 'Stocks', type: :request do
   it '4. It should update the stock via sell method' do
     User.find(JSON.parse(response.body)['data']['id']).trader.update(status: 'approved')
     @stock = FactoryBot.build(:stock, trader: @trader, market: @market, stock_name: @market.stock_name,
-                                      price_per_unit: @market.price_per_unit)
+                                      price_per_unit: @market.price_per_unit, symbol: @market.symbol)
     @stock.total_price = @market.price_per_unit * @stock.shares
     @stock.save
     @transaction_history = FactoryBot.create(:transaction_history, trader: @trader, stock_name: @market.stock_name,
-                                                                   price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares)
+                                                                   price_per_unit: @market.price_per_unit, total_price: @market.price_per_unit * @stock.shares, balance: @trader.wallet - @stock.total_price, shares: @stock.shares, symbol: @market.symbol, transaction_type:'sell')
     patch "/api/v1/traders/#{@trader.id}/sell/stocks/#{Trader.find(@trader.id).stocks.first.id}", params: { shares: 10 },
                                                                                                   headers: @headers
     expect(response).to have_http_status(200)

@@ -71,11 +71,12 @@ module Api
               market.update(price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s)
             end
           end
-          Stocks.all.each do |stock|
+        if !(Stock.all.empty?)
+          Stock.all.each do |stock|
             specific_market = Market.find(stock.market_id)
-            stock.update(price_per_unit: specific_market.price_per_unit,
-                         percentage_change: specific_market.percentage_change)
+            stock.update(price_per_unit: specific_market.price_per_unit)
           end
+        end
           render json: { message: 'Global stocks updated successfully' }, status: 200
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401

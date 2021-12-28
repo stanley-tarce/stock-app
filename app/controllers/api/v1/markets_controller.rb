@@ -57,8 +57,8 @@ module Api
           stocks = %w[AAPL TSLA NKE ACN UL UBER AMZN AUDVF AMD MSFT PXLW ADBE VZ
                       CAJFF NINOF FUJIF SONY MBFJF TOYOF PHG CSIOF YAMHF KO PEP CAT TWTR NVDA WACMF H COST DELL GDDY SEKEF STNE BA DIS HD SBUX GME ADDDF TGT UA SSNLF INTC WYNN LVS DISCA QCOM BABAF]
           client = IEX::Api::Client.new(
-            publishable_token: 'pk_9a4005e57b274b3d9e2bd747f1b34bb5',
-            secret_token: 'sk_c0449ed5b4dc4051b2793339526c980c',
+            publishable_token: ENV['IEX_PUBLISHABLE_TOKEN'],
+            secret_token: ENV['IEX_SECRET_TOKEN'],  
             endpoint: 'https://cloud.iexapis.com/v1'
           )
           stocks.each do |stock|
@@ -83,7 +83,6 @@ module Api
       end
 
       private
-
       def market_all
         Market.all
       end

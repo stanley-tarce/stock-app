@@ -119,7 +119,11 @@ module Api
       end
 
       def check_if_number?(value)
-        value.to_i.to_s == value
+        if value.class == String
+          return value.to_i.to_s == value
+        else
+          value.to_s.to_i == value
+        end
       end
     end
   end

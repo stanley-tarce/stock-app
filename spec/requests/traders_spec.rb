@@ -132,14 +132,12 @@ RSpec.describe 'Trader API Testing', type: :request do
   end
   it '8. It should let the trader cash in ' do
     cash_in = "/api/v1/traders/#{User.find(JSON.parse(response.body)['data']['id']).trader.id}/cash_in"
-    patch cash_in, params: { trader: { wallet: '1000' } }, headers: @headers
-
+    patch cash_in, params: { trader: { wallet: 1000 } }, headers: @headers
     expect(response).to have_http_status(:success)
   end
   it '9. It should let the trader cash out' do
     cash_out = "/api/v1/traders/#{User.find(JSON.parse(response.body)['data']['id']).trader.id}/cash_out"
-    patch cash_out, params: { trader: { wallet: '1000' } }, headers: @headers
-
+    patch cash_out, params: { trader: { wallet: 1000 } }, headers: @headers
     expect(response).to have_http_status(:success)
   end
   it '10. It should render an error if wallet is nil for cash in' do

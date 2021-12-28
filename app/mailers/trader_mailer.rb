@@ -13,6 +13,5 @@ class TraderMailer < ApplicationMailer
         mail(to: email_address_with_name(@trader.email, @trader.name),
         subject: "Your account is approved"
     )
-    puts "email sent"
     end
 end

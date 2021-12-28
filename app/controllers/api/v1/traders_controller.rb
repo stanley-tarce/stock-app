@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "#{Rails.root}/app/controllers/modules/traders_module"
 module Api
   module V1
@@ -17,28 +18,28 @@ module Api
         exceptions = %i[password password_confirmation]
         trader = Trader.new(trader_params.except(*exceptions))
         user = User.new(email: trader.email, password: params[:trader][:password],
-                           password_confirmation: params[:trader] [:password_confirmation], name: params[:trader][:name], user_type: 'trader')
-        if user.save 
+                        password_confirmation: params[:trader] [:password_confirmation], name: params[:trader][:name], user_type: 'trader')
+        if user.save
           trader.user_id = user.id
           if trader.save!
             TraderMailer.with(trader: trader).send_email_receipt.deliver_later
-            render json:  trader , status: 200
+            render json: trader, status: 200
           else
             render json: { errors: trader.errors.full_messages }, status: 422
           end
         else
-            render json: { errors: user.errors.full_messages }, status: 422
+          render json: { errors: user.errors.full_messages }, status: 422
         end
       end
 
       def update
-          user = User.where(id: single_trader[:user_id])
-          if single_trader.update(trader_params)
-            user.update(name: single_trader.name, email: single_trader.email)
-            render json: { message: 'Trader updated successfully' }, status: 200
-          else
-            render json: { error: 'Trader update failed' }, status: 422
-          end
+        user = User.where(id: single_trader[:user_id])
+        if single_trader.update(trader_params)
+          user.update(name: single_trader.name, email: single_trader.email)
+          render json: { message: 'Trader updated successfully' }, status: 200
+        else
+          render json: { error: 'Trader update failed' }, status: 422
+        end
       end
 
       def update_trader_status
@@ -54,11 +55,11 @@ module Api
         end
       end
 
-      def show 
+      def show
         if single_trader
           render json: single_trader, status: 200
         else
-          render json: { error: 'You are not authorized to view this page.' }, status: 401 
+          render json: { error: 'You are not authorized to view this page.' }, status: 401
         end
       end
 
@@ -74,14 +75,15 @@ module Api
 
       def cash_in
         trader = current_api_v1_user.trader
-        if !(check_if_number?(params[:trader][:wallet]))
+        unless check_if_number?(params[:trader][:wallet])
           return render json: { error: 'Please enter a valid amount' }, status: 422
         end
-        puts params.inspect 
+
+        puts params.inspect
         new_wallet = trader.update(wallet: (trader.wallet.to_f + params[:trader][:wallet].to_f))
 
         if new_wallet
-     
+
           render json: { message: 'Top up is successful' }, status: 200
         else
           render json: { error: 'top up failed' }, status: 422
@@ -90,11 +92,11 @@ module Api
 
       def cash_out
         trader = current_api_v1_user.trader
-        if !(check_if_number?(params[:trader][:wallet]))
+        unless check_if_number?(params[:trader][:wallet])
           return render json: { error: 'Please enter a valid amount' }, status: 422
         end
-        
-        if (params[:trader][:wallet].to_f > trader.wallet)
+
+        if params[:trader][:wallet].to_f > trader.wallet
           render json: { error: 'Insufficient funds' }, status: 422
         else
           new_wallet = trader.update(wallet: trader.wallet.to_f - params[:trader][:wallet].to_f)
@@ -105,7 +107,6 @@ module Api
           end
         end
       end
-
 
       private
 
@@ -118,7 +119,11 @@ module Api
       end
 
       def check_if_number?(value)
-        value.to_i.to_s == value
+        if value.class == String
+          return value.to_i.to_s == value
+        else
+          value.to_s.to_i == value
+        end
       end
     end
   end

@@ -1,5 +1,5 @@
 class TraderMailer < ApplicationMailer
-    default from: 'support@stockapp.com'
+    default from: ENV['TRADER_EMAIL']
 
     def send_email_receipt
         @trader = params[:trader]
@@ -13,6 +13,5 @@ class TraderMailer < ApplicationMailer
         mail(to: email_address_with_name(@trader.email, @trader.name),
         subject: "Your account is approved"
     )
-    puts "email sent"
     end
 end

@@ -108,6 +108,11 @@ module Api
         end
       end
 
+      def show_trader_data
+        trader = current_api_v1_user.trader
+        render json: trader, status: 200
+      end
+
       private
 
       def all_trader

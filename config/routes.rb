@@ -14,6 +14,7 @@ Rails.application.routes.draw do
         get 'update_global_stocks', to: 'markets#update_global_stocks'
       end
       get 'traders/updatestatus/:id', to: 'traders#update_trader_status'
+      get 'traders/rejectstatus/:id', to: 'traders#reject_trader_status'
       get 'traders/show_trader_data', to: 'traders#show_trader_data'
       get 'traders/transaction_histories', to: 'transaction_histories#index'
       get 'traders/transaction_histories/:id', to: 'transaction_histories#show'

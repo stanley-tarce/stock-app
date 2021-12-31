@@ -1,3 +1,3 @@
 class TraderSerializer < ActiveModel::Serializer
-  attributes :id, :name, :email, :status, :user_id
+  attributes :id, :name, :email, :status, :user_id, :wallet
 end

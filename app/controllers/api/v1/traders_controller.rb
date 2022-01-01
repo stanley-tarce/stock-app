@@ -66,6 +66,18 @@ module Api
           render json: { error: 'You are not authorized to view this page.' }, status: 401
         end
       end
+       def pending_trader_status
+        if authenticate_if_admin!
+          if single_trader.update(status: 'pending')
+            TraderMailer.with(trader: single_trader).approved_account_receipt.deliver_later
+            render json: { status: 'approved', message: 'Trader status changed to approved' }, status: 200
+          else
+            render json: { error: 'Trader status change failed' }, status: 422
+          end
+        else
+          render json: { error: 'You are not authorized to view this page.' }, status: 401
+        end
+      end
 
       def show
         if single_trader

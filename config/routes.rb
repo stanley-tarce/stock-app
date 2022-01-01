@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       end
       get 'traders/updatestatus/:id', to: 'traders#update_trader_status'
       get 'traders/rejectstatus/:id', to: 'traders#reject_trader_status'
+      get 'traders/pendingstatus/:id', to: 'traders#pending_trader_status'
       get 'traders/show_trader_data', to: 'traders#show_trader_data'
       get 'traders/transaction_histories', to: 'transaction_histories#index'
       get 'traders/transaction_histories/:id', to: 'transaction_histories#show'

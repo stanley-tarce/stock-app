@@ -58,7 +58,7 @@ module Api
                       CAJFF NINOF FUJIF SONY MBFJF TOYOF PHG CSIOF YAMHF KO PEP CAT TWTR NVDA WACMF H COST DELL GDDY SEKEF STNE BA DIS HD SBUX GME ADDDF TGT UA SSNLF INTC WYNN LVS DISCA QCOM BABAF]
           client = IEX::Api::Client.new(
             publishable_token: ENV['IEX_PUBLISHABLE_TOKEN'],
-            secret_token: ENV['IEX_SECRET_TOKEN'],  
+            secret_token: ENV['IEX_SECRET_TOKEN'],
             endpoint: 'https://cloud.iexapis.com/v1'
           )
           stocks.each do |stock|
@@ -72,12 +72,12 @@ module Api
               market.update(price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s, logo: logo)
             end
           end
-        if !(Stock.all.empty?)
-          Stock.all.each do |stock|
-            specific_market = Market.find(stock.market_id)
-            stock.update(price_per_unit: specific_market.price_per_unit, logo: specific_market.logo)
+          unless Stock.all.empty?
+            Stock.all.each do |stock|
+              specific_market = Market.find(stock.market_id)
+              stock.update(price_per_unit: specific_market.price_per_unit, logo: specific_market.logo)
+            end
           end
-        end
           render json: { message: 'Global stocks updated successfully' }, status: 200
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401
@@ -85,6 +85,7 @@ module Api
       end
 
       private
+
       def market_all
         Market.all
       end

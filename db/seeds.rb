@@ -39,8 +39,9 @@ stocks = %w[AAPL TSLA NKE ACN UL UBER AMZN AUDVF AMD MSFT PXLW ADBE VZ CAJFF
 
 stocks.each do |stock|
   quote = client.quote(stock)
+  logo = client.logo(stock)
   Market.create(stock_name: quote.company_name, price_per_unit: quote.latest_price,
-                percentage_change: quote.change_percent_s, symbol: stock)
+                percentage_change: quote.change_percent_s, symbol: stock, logo: logo)
 end
 
 # data = File.open("#{Rails.root}/markets.csv").read

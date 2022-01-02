@@ -68,13 +68,14 @@ module Api
               market.save
             else
               quote = client.quote(stock)
-              market.update(price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s)
+              logo = client.logo(stock)
+              market.update(price_per_unit: quote.latest_price, percentage_change: quote.change_percent_s, logo: logo)
             end
           end
         if !(Stock.all.empty?)
           Stock.all.each do |stock|
             specific_market = Market.find(stock.market_id)
-            stock.update(price_per_unit: specific_market.price_per_unit)
+            stock.update(price_per_unit: specific_market.price_per_unit, logo: specific_market.logo)
           end
         end
           render json: { message: 'Global stocks updated successfully' }, status: 200

@@ -1,5 +1,5 @@
 module MarketsModule
   def market_params
-    params.require(:market).permit(:percentage_change, :stock_name, :price_per_unit, :symbol)
+    params.require(:market).permit(:percentage_change, :stock_name, :price_per_unit, :symbol,:logo)
   end
 end

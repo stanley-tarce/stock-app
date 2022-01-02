@@ -10,6 +10,7 @@ FactoryBot.define do
     price_per_unit { price_per_unit }
     shares { shares }
     total_price { shares * price_per_unit }
+    logo {'asd'}
     association :market, stock_name: stock_name, price_per_unit: price_per_unit
     association :trader
   end

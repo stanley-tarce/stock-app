@@ -2,8 +2,9 @@
 
 
 class Trader < ApplicationRecord
+  after_destroy :destroy_associated_data
   has_many :transaction_histories
-  belongs_to :user, dependent: :destroy # has-one
+  belongs_to :user
   before_create :set_trader_status!
   has_many :stocks
   has_many :markets, through: :stocks
@@ -12,7 +13,11 @@ class Trader < ApplicationRecord
   validates :user_id, presence: true
 
   private
-
+  def destroy_associated_data
+    self.transaction_histories.destroy_all if self.transaction_histories.present?
+    self.stocks.destroy_all if self.stocks.present?
+    self.user.destroy
+  end
   def set_trader_status!
     self.status = 'pending'
   end

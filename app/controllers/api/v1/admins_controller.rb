@@ -73,7 +73,7 @@ module Api
               render json: { error: trader.errors.full_messages }, status: 422
             end
           else
-            render json: { error: trader.errors.full_messages }, status: 422
+            render json: { error: user.errors.full_messages }, status: 422
           end
         else
           render json: { error: 'You are not authorized to view this page.' }, status: 401

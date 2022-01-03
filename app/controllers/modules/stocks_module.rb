@@ -1,5 +1,5 @@
 module StocksModule
   def stock_params
-    params.require(:stock).permit(:market_id,:shares,:price_per_unit,:total_price,:trader_id,:stock_name)
+    params.require(:stock).permit(:market_id,:shares,:price_per_unit,:total_price,:trader_id,:stock_name,:symbol,:logo)
   end
 end

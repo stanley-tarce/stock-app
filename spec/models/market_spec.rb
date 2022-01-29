@@ -15,12 +15,12 @@ RSpec.describe Market, type: :model do
   end
 
   it '3. It should have many stocks' do
-    t = Market.reflect_on_association(:stocks)
+    t = described_class.reflect_on_association(:stocks)
     expect(t.macro).to eq(:has_many)
   end
 
   it '4. It should have many traders' do
-    t = Market.reflect_on_association(:traders)
+    t = described_class.reflect_on_association(:traders)
     expect(t.macro).to eq(:has_many)
   end
 end

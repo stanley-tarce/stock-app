@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Stock, type: :model do
-  before(:each) do
+  before do
     @stock = FactoryBot.create(:stock)
   end
 
@@ -30,12 +30,12 @@ RSpec.describe Stock, type: :model do
   end
 
   it '5. It should belong to trader' do
-    t = Stock.reflect_on_association(:trader)
+    t = described_class.reflect_on_association(:trader)
     expect(t.macro).to eq(:belongs_to)
   end
 
   it '6. It should belong to market' do
-    t = Stock.reflect_on_association(:market)
+    t = described_class.reflect_on_association(:market)
     expect(t.macro).to eq(:belongs_to)
   end
 

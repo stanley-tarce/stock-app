@@ -19,7 +19,7 @@ RSpec.describe 'Markets', type: :request do
     }
   end
 
-  before(:each) do
+  before do
     @user = FactoryBot.create(:user, user_type: 'admin')
     @market = FactoryBot.create(:market)
 

@@ -31,12 +31,14 @@ group :development, :test do
   gem 'rspec-rails', '~> 5.0.0' # We will use rspec-rails for our tests and specs
   gem 'factory_bot_rails', '~> 6.2.0' # Use factory_bot_rails for our factories
   gem 'faker'
+  gem 'rubocop-rspec', require: false
 end
 
 group :development do
   gem 'listen', '~> 3.3'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  gem 'rails-erd'
 end
 
 group :test do
@@ -56,4 +58,3 @@ gem 'devise_token_auth' # Authentication for Rails API
 gem 'active_model_serializers', '~> 0.10.0' # API Serializer 
 gem 'iex-ruby-client' #API 
 gem 'activerecord-reset-pk-sequence'
-gem 'rails-erd', group: :development

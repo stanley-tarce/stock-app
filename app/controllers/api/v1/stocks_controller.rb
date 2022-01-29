@@ -134,8 +134,9 @@ module Api
       end
 
       def check_existing_stock
-        if current_api_v1_user.trader.stocks.all.length.positive?
-          current_api_v1_user.trader.stocks.all.each do |stock|
+        user = current_api_v1_user
+        if user.trader.stocks.all.length.positive?
+          user.trader.stocks.all.each do |stock|
             return true if stock.market_id == params[:stock][:market_id]
           end
         else

@@ -162,4 +162,14 @@ RSpec.describe 'Trader API Testing', type: :request do
 
     expect(response).to have_http_status(:unprocessable_entity)
   end
+  it '12. It should not be able to cash in without headers' do
+    cash_in = "/api/v1/traders/#{User.find(JSON.parse(response.body)['data']['id']).trader.id}/cash_in"
+    patch cash_in, params: { trader: { wallet: 1000 } }
+    expect(response).to have_http_status(:unauthorized)
+  end
+  it '13. It should not be able to cash out without headers' do 
+    cash_out = "/api/v1/traders/#{User.find(JSON.parse(response.body)['data']['id']).trader.id}/cash_out"
+    patch cash_out, params: { trader: { wallet: 100 } }
+    expect(response).to have_http_status(:unauthorized)
+  end
 end

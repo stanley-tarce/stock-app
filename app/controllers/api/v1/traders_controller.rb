@@ -105,7 +105,6 @@ module Api
           return render json: { error: 'Please enter a valid amount' }, status: 422
         end
 
-        puts params.inspect
         new_wallet = trader.update(wallet: (trader.wallet.to_f + params[:trader][:wallet].to_f))
 
         if new_wallet

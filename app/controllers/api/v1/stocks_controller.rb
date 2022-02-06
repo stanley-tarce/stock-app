@@ -19,7 +19,7 @@ module Api
       def create
         if !authenticate_if_admin! && authenticate_trader_status!
           return render json: { error: 'Stock Existing Already' }, status: 422 if check_existing_stock
-
+          return render json: { error: 'Please enter a valid number'}, status: 422 if params[:stock][:shares].to_i <= 0 
           trader = current_api_v1_user.trader
           market = Market.find(params[:stock][:market_id])
           stock = trader.stocks.new(stock_params)
@@ -49,6 +49,7 @@ module Api
 
       def buy_update
         if !authenticate_if_admin! && authenticate_trader_status!
+          return render json: { error: 'Please enter a valid number'}, status: 422 if params[:shares].to_i <= 0 
           trader = current_api_v1_user.trader
           old_stock_shares = single_stock.shares
           market = Market.find(single_stock.market_id)
@@ -69,10 +70,10 @@ module Api
             if transaction.save
               render json: trader.transaction_histories.all, status: 200
             else
-              render json: { errors: 'Stock update failed1' }, status: 422
+              render json: { errors: 'Stock update failed' }, status: 422
             end
           else
-            render json: { errors: 'Stock update failed2' }, status: 422
+            render json: { errors: 'Stock update failed' }, status: 422
           end
         else
           render json: { error: 'You are not authorized to update a stock' }, status: :unauthorized
@@ -81,6 +82,7 @@ module Api
 
       def sell_update
         if !authenticate_if_admin! && authenticate_trader_status!
+          return render json: { error: 'Please enter a valid number'}, status: 422 if params[:shares].to_i <= 0 
           trader = current_api_v1_user.trader
           old_stock_shares = single_stock.shares
           market = Market.find(single_stock.market_id)

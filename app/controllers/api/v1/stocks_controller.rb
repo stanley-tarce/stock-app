@@ -9,7 +9,7 @@ module Api
       before_action :authenticate_api_v1_user!
       include StocksModule
       def index
-        if !authenticate_if_admin! && authenticate_trader_status!
+        if !authenticate_if_admin!
           render json: stock_all_v2
         else
           render json: { error: 'You are not authorized to perform this action.' }, status: :unauthorized
